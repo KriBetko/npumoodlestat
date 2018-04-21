@@ -16,27 +16,27 @@
 
 
 /**
- * English strings for widget
+ * English strings for npumoodlestat
  *
  * You can have a rather longer description of the file as well,
  * if you like, and it can span multiple lines.
  *
- * @package    mod_widget
+ * @package    mod_npumoodlestat
  * @copyright  2016 Your Name <your@email.address>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'widget';
-$string['modulenameplural'] = 'widgets';
-$string['modulename_help'] = 'Use the widget module for... | The widget module allows...';
-$string['widget:addinstance'] = 'Add a new widget';
-$string['widget:submit'] = 'Submit widget';
-$string['widget:view'] = 'View widget';
-$string['widgetfieldset'] = 'Custom example fieldset';
-$string['widgetname'] = 'widget name';
-$string['widgetname_help'] = 'This is the content of the help tooltip associated with the widgetname field. Markdown syntax is supported.';
-$string['widget'] = 'widget';
-$string['pluginadministration'] = 'widget administration';
-$string['pluginname'] = 'widget';
+$string['modulename'] = 'npumoodlestat';
+$string['modulenameplural'] = 'npumoodlestats';
+$string['modulename_help'] = 'Use the npumoodlestat module for... | The npumoodlestat module allows...';
+$string['npumoodlestat:addinstance'] = 'Add a new npumoodlestat';
+$string['npumoodlestat:submit'] = 'Submit npumoodlestat';
+$string['npumoodlestat:view'] = 'View npumoodlestat';
+$string['npumoodlestatfieldset'] = 'Custom example fieldset';
+$string['npumoodlestatname'] = 'npumoodlestat name';
+$string['npumoodlestatname_help'] = 'This is the content of the help tooltip associated with the npumoodlestatname field. Markdown syntax is supported.';
+$string['npumoodlestat'] = 'npumoodlestat';
+$string['pluginadministration'] = 'npumoodlestat administration';
+$string['pluginname'] = 'npumoodlestat';

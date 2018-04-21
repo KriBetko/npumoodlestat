@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Library of interface functions and constants for module widget
+ * Library of interface functions and constants for module npumoodlestat
  *
  * All the core Moodle functions, neeeded to allow the module to work
  * integrated in Moodle should be placed here.
  *
- * All the widget specific functions, needed to implement all the module
+ * All the npumoodlestat specific functions, needed to implement all the module
  * logic, should go to locallib.php. This will help to save some memory when
  * Moodle is performing actions across all modules.
  *
- * @package    mod_widget
+ * @package    mod_npumoodlestat
  * @copyright  2016 Your Name <your@email.address>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -46,7 +46,7 @@ define('WIDGET_ULTIMATE_ANSWER', 42);
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed true if the feature is supported, null if unknown
  */
-function widget_supports($feature)
+function npumoodlestat_supports($feature)
 {
 
     switch ($feature) {
@@ -64,55 +64,55 @@ function widget_supports($feature)
 }
 
 /**
- * Saves a new instance of the widget into the database
+ * Saves a new instance of the npumoodlestat into the database
  *
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
  * will create a new instance and return the id number
  * of the new instance.
  *
- * @param stdClass $widget Submitted data from the form in mod_form.php
- * @param mod_widget_mod_form $mform The form instance itself (if needed)
- * @return int The id of the newly inserted widget record
+ * @param stdClass $npumoodlestat Submitted data from the form in mod_form.php
+ * @param mod_npumoodlestat_mod_form $mform The form instance itself (if needed)
+ * @return int The id of the newly inserted npumoodlestat record
  */
-function widget_add_instance(stdClass $widget, mod_widget_mod_form $mform = null)
+function npumoodlestat_add_instance(stdClass $npumoodlestat, mod_npumoodlestat_mod_form $mform = null)
 {
     global $DB;
 
-    $widget->timecreated = time();
+    $npumoodlestat->timecreated = time();
 
     // You may have to add extra stuff in here.
 
-    $widget->id = $DB->insert_record('widget', $widget);
+    $npumoodlestat->id = $DB->insert_record('npumoodlestat', $npumoodlestat);
 
-    widget_grade_item_update($widget);
+    npumoodlestat_grade_item_update($npumoodlestat);
 
-    return $widget->id;
+    return $npumoodlestat->id;
 }
 
 /**
- * Updates an instance of the widget in the database
+ * Updates an instance of the npumoodlestat in the database
  *
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
  * will update an existing instance with new data.
  *
- * @param stdClass $widget An object from the form in mod_form.php
- * @param mod_widget_mod_form $mform The form instance itself (if needed)
+ * @param stdClass $npumoodlestat An object from the form in mod_form.php
+ * @param mod_npumoodlestat_mod_form $mform The form instance itself (if needed)
  * @return boolean Success/Fail
  */
-function widget_update_instance(stdClass $widget, mod_widget_mod_form $mform = null)
+function npumoodlestat_update_instance(stdClass $npumoodlestat, mod_npumoodlestat_mod_form $mform = null)
 {
     global $DB;
 
-    $widget->timemodified = time();
-    $widget->id = $widget->instance;
+    $npumoodlestat->timemodified = time();
+    $npumoodlestat->id = $npumoodlestat->instance;
 
     // You may have to add extra stuff in here.
 
-    $result = $DB->update_record('widget', $widget);
+    $result = $DB->update_record('npumoodlestat', $npumoodlestat);
 
-    widget_grade_item_update($widget);
+    npumoodlestat_grade_item_update($npumoodlestat);
 
     return $result;
 }
@@ -120,37 +120,37 @@ function widget_update_instance(stdClass $widget, mod_widget_mod_form $mform = n
 /**
  * This standard function will check all instances of this module
  * and make sure there are up-to-date events created for each of them.
- * If courseid = 0, then every widget event in the site is checked, else
- * only widget events belonging to the course specified are checked.
+ * If courseid = 0, then every npumoodlestat event in the site is checked, else
+ * only npumoodlestat events belonging to the course specified are checked.
  * This is only required if the module is generating calendar events.
  *
  * @param int $courseid Course ID
  * @return bool
  */
-function widget_refresh_events($courseid = 0)
+function npumoodlestat_refresh_events($courseid = 0)
 {
     global $DB;
 
     if ($courseid == 0) {
-        if (!$widgets = $DB->get_records('widget')) {
+        if (!$npumoodlestats = $DB->get_records('npumoodlestat')) {
             return true;
         }
     } else {
-        if (!$widgets = $DB->get_records('widget', array('course' => $courseid))) {
+        if (!$npumoodlestats = $DB->get_records('npumoodlestat', array('course' => $courseid))) {
             return true;
         }
     }
 
-    foreach ($widgets as $widget) {
+    foreach ($npumoodlestats as $npumoodlestat) {
         // Create a function such as the one below to deal with updating calendar events.
-        // widget_update_events($widget);
+        // npumoodlestat_update_events($npumoodlestat);
     }
 
     return true;
 }
 
 /**
- * Removes an instance of the widget from the database
+ * Removes an instance of the npumoodlestat from the database
  *
  * Given an ID of an instance of this module,
  * this function will permanently delete the instance
@@ -159,19 +159,19 @@ function widget_refresh_events($courseid = 0)
  * @param int $id Id of the module instance
  * @return boolean Success/Failure
  */
-function widget_delete_instance($id)
+function npumoodlestat_delete_instance($id)
 {
     global $DB;
 
-    if (!$widget = $DB->get_record('widget', array('id' => $id))) {
+    if (!$npumoodlestat = $DB->get_record('npumoodlestat', array('id' => $id))) {
         return false;
     }
 
     // Delete any dependent records here.
 
-    $DB->delete_records('widget', array('id' => $widget->id));
+    $DB->delete_records('npumoodlestat', array('id' => $npumoodlestat->id));
 
-    widget_grade_item_delete($widget);
+    npumoodlestat_grade_item_delete($npumoodlestat);
 
     return true;
 }
@@ -187,10 +187,10 @@ function widget_delete_instance($id)
  * @param stdClass $course The course record
  * @param stdClass $user The user record
  * @param cm_info|stdClass $mod The course module info object or record
- * @param stdClass $widget The widget instance record
+ * @param stdClass $npumoodlestat The npumoodlestat instance record
  * @return stdClass|null
  */
-function widget_user_outline($course, $user, $mod, $widget)
+function npumoodlestat_user_outline($course, $user, $mod, $npumoodlestat)
 {
 
     $return = new stdClass();
@@ -208,22 +208,22 @@ function widget_user_outline($course, $user, $mod, $widget)
  * @param stdClass $course the current course record
  * @param stdClass $user the record of the user we are generating report for
  * @param cm_info $mod course module info
- * @param stdClass $widget the module instance record
+ * @param stdClass $npumoodlestat the module instance record
  */
-function widget_user_complete($course, $user, $mod, $widget)
+function npumoodlestat_user_complete($course, $user, $mod, $npumoodlestat)
 {
 }
 
 /**
  * Given a course and a time, this module should find recent activity
- * that has occurred in widget activities and print it out.
+ * that has occurred in npumoodlestat activities and print it out.
  *
  * @param stdClass $course The course record
  * @param bool $viewfullnames Should we display full names
  * @param int $timestart Print activity since this timestamp
  * @return boolean True if anything was printed, otherwise false
  */
-function widget_print_recent_activity($course, $viewfullnames, $timestart)
+function npumoodlestat_print_recent_activity($course, $viewfullnames, $timestart)
 {
     return false;
 }
@@ -233,7 +233,7 @@ function widget_print_recent_activity($course, $viewfullnames, $timestart)
  *
  * This callback function is supposed to populate the passed array with
  * custom activity records. These records are then rendered into HTML via
- * {@link widget_print_recent_mod_activity()}.
+ * {@link npumoodlestat_print_recent_mod_activity()}.
  *
  * Returns void, it adds items into $activities and increases $index.
  *
@@ -245,12 +245,12 @@ function widget_print_recent_activity($course, $viewfullnames, $timestart)
  * @param int $userid check for a particular user's activity only, defaults to 0 (all users)
  * @param int $groupid check for a particular group's activity only, defaults to 0 (all groups)
  */
-function widget_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0)
+function npumoodlestat_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0)
 {
 }
 
 /**
- * Prints single activity item prepared by {@link widget_get_recent_mod_activity()}
+ * Prints single activity item prepared by {@link npumoodlestat_get_recent_mod_activity()}
  *
  * @param stdClass $activity activity record with added 'cmid' property
  * @param int $courseid the id of the course we produce the report for
@@ -258,7 +258,7 @@ function widget_get_recent_mod_activity(&$activities, &$index, $timestart, $cour
  * @param array $modnames as returned by {@link get_module_types_names()}
  * @param bool $viewfullnames display users' full names
  */
-function widget_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames)
+function npumoodlestat_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames)
 {
 }
 
@@ -272,7 +272,7 @@ function widget_print_recent_mod_activity($activity, $courseid, $detail, $modnam
  *
  * @return boolean
  */
-function widget_cron()
+function npumoodlestat_cron()
 {
     return true;
 }
@@ -285,7 +285,7 @@ function widget_cron()
  *
  * @return array
  */
-function widget_get_extra_capabilities()
+function npumoodlestat_get_extra_capabilities()
 {
     return array();
 }
@@ -293,20 +293,20 @@ function widget_get_extra_capabilities()
 /* Gradebook API */
 
 /**
- * Is a given scale used by the instance of widget?
+ * Is a given scale used by the instance of npumoodlestat?
  *
- * This function returns if a scale is being used by one widget
+ * This function returns if a scale is being used by one npumoodlestat
  * if it has support for grading and scales.
  *
- * @param int $widgetid ID of an instance of this module
+ * @param int $npumoodlestatid ID of an instance of this module
  * @param int $scaleid ID of the scale
- * @return bool true if the scale is used by the given widget instance
+ * @return bool true if the scale is used by the given npumoodlestat instance
  */
-function widget_scale_used($widgetid, $scaleid)
+function npumoodlestat_scale_used($npumoodlestatid, $scaleid)
 {
     global $DB;
 
-    if ($scaleid and $DB->record_exists('widget', array('id' => $widgetid, 'grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('npumoodlestat', array('id' => $npumoodlestatid, 'grade' => -$scaleid))) {
         return true;
     } else {
         return false;
@@ -314,18 +314,18 @@ function widget_scale_used($widgetid, $scaleid)
 }
 
 /**
- * Checks if scale is being used by any instance of widget.
+ * Checks if scale is being used by any instance of npumoodlestat.
  *
  * This is used to find out if scale used anywhere.
  *
  * @param int $scaleid ID of the scale
- * @return boolean true if the scale is used by any widget instance
+ * @return boolean true if the scale is used by any npumoodlestat instance
  */
-function widget_scale_used_anywhere($scaleid)
+function npumoodlestat_scale_used_anywhere($scaleid)
 {
     global $DB;
 
-    if ($scaleid and $DB->record_exists('widget', array('grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('npumoodlestat', array('grade' => -$scaleid))) {
         return true;
     } else {
         return false;
@@ -333,30 +333,30 @@ function widget_scale_used_anywhere($scaleid)
 }
 
 /**
- * Creates or updates grade item for the given widget instance
+ * Creates or updates grade item for the given npumoodlestat instance
  *
  * Needed by {@link grade_update_mod_grades()}.
  *
- * @param stdClass $widget instance object with extra cmidnumber and modname property
+ * @param stdClass $npumoodlestat instance object with extra cmidnumber and modname property
  * @param bool $reset reset grades in the gradebook
  * @return void
  */
-function widget_grade_item_update(stdClass $widget, $reset = false)
+function npumoodlestat_grade_item_update(stdClass $npumoodlestat, $reset = false)
 {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
     $item = array();
-    $item['itemname'] = clean_param($widget->name, PARAM_NOTAGS);
+    $item['itemname'] = clean_param($npumoodlestat->name, PARAM_NOTAGS);
     $item['gradetype'] = GRADE_TYPE_VALUE;
 
-    if ($widget->grade > 0) {
+    if ($npumoodlestat->grade > 0) {
         $item['gradetype'] = GRADE_TYPE_VALUE;
-        $item['grademax'] = $widget->grade;
+        $item['grademax'] = $npumoodlestat->grade;
         $item['grademin'] = 0;
-    } else if ($widget->grade < 0) {
+    } else if ($npumoodlestat->grade < 0) {
         $item['gradetype'] = GRADE_TYPE_SCALE;
-        $item['scaleid'] = -$widget->grade;
+        $item['scaleid'] = -$npumoodlestat->grade;
     } else {
         $item['gradetype'] = GRADE_TYPE_NONE;
     }
@@ -365,34 +365,34 @@ function widget_grade_item_update(stdClass $widget, $reset = false)
         $item['reset'] = true;
     }
 
-    grade_update('mod/widget', $widget->course, 'mod', 'widget',
-        $widget->id, 0, null, $item);
+    grade_update('mod/npumoodlestat', $npumoodlestat->course, 'mod', 'npumoodlestat',
+        $npumoodlestat->id, 0, null, $item);
 }
 
 /**
- * Delete grade item for given widget instance
+ * Delete grade item for given npumoodlestat instance
  *
- * @param stdClass $widget instance object
+ * @param stdClass $npumoodlestat instance object
  * @return grade_item
  */
-function widget_grade_item_delete($widget)
+function npumoodlestat_grade_item_delete($npumoodlestat)
 {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
-    return grade_update('mod/widget', $widget->course, 'mod', 'widget',
-        $widget->id, 0, null, array('deleted' => 1));
+    return grade_update('mod/npumoodlestat', $npumoodlestat->course, 'mod', 'npumoodlestat',
+        $npumoodlestat->id, 0, null, array('deleted' => 1));
 }
 
 /**
- * Update widget grades in the gradebook
+ * Update npumoodlestat grades in the gradebook
  *
  * Needed by {@link grade_update_mod_grades()}.
  *
- * @param stdClass $widget instance object with extra cmidnumber and modname property
+ * @param stdClass $npumoodlestat instance object with extra cmidnumber and modname property
  * @param int $userid update grade of specific user only, 0 means all participants
  */
-function widget_update_grades(stdClass $widget, $userid = 0)
+function npumoodlestat_update_grades(stdClass $npumoodlestat, $userid = 0)
 {
     global $CFG, $DB;
     require_once($CFG->libdir . '/gradelib.php');
@@ -400,7 +400,7 @@ function widget_update_grades(stdClass $widget, $userid = 0)
     // Populate array of grade objects indexed by userid.
     $grades = array();
 
-    grade_update('mod/widget', $widget->course, 'mod', 'widget', $widget->id, 0, $grades);
+    grade_update('mod/npumoodlestat', $npumoodlestat->course, 'mod', 'npumoodlestat', $npumoodlestat->id, 0, $grades);
 }
 
 /* File API */
@@ -416,15 +416,15 @@ function widget_update_grades(stdClass $widget, $userid = 0)
  * @param stdClass $context
  * @return array of [(string)filearea] => (string)description
  */
-function widget_get_file_areas($course, $cm, $context)
+function npumoodlestat_get_file_areas($course, $cm, $context)
 {
     return array();
 }
 
 /**
- * File browsing support for widget file areas
+ * File browsing support for npumoodlestat file areas
  *
- * @package mod_widget
+ * @package mod_npumoodlestat
  * @category files
  *
  * @param file_browser $browser
@@ -438,26 +438,26 @@ function widget_get_file_areas($course, $cm, $context)
  * @param string $filename
  * @return file_info instance or null if not found
  */
-function widget_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename)
+function npumoodlestat_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename)
 {
     return null;
 }
 
 /**
- * Serves the files from the widget file areas
+ * Serves the files from the npumoodlestat file areas
  *
- * @package mod_widget
+ * @package mod_npumoodlestat
  * @category files
  *
  * @param stdClass $course the course object
  * @param stdClass $cm the course module object
- * @param stdClass $context the widget's context
+ * @param stdClass $context the npumoodlestat's context
  * @param string $filearea the name of the file area
  * @param array $args extra arguments (itemid, path)
  * @param bool $forcedownload whether or not force download
  * @param array $options additional options affecting the file serving
  */
-function widget_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = array())
+function npumoodlestat_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = array())
 {
     global $DB, $CFG;
 
@@ -473,30 +473,30 @@ function widget_pluginfile($course, $cm, $context, $filearea, array $args, $forc
 /* Navigation API */
 
 /**
- * Extends the global navigation tree by adding widget nodes if there is a relevant content
+ * Extends the global navigation tree by adding npumoodlestat nodes if there is a relevant content
  *
  * This can be called by an AJAX request so do not rely on $PAGE as it might not be set up properly.
  *
- * @param navigation_node $navref An object representing the navigation tree node of the widget module instance
+ * @param navigation_node $navref An object representing the navigation tree node of the npumoodlestat module instance
  * @param stdClass $course current course record
- * @param stdClass $module current widget instance record
+ * @param stdClass $module current npumoodlestat instance record
  * @param cm_info $cm course module information
  */
-function widget_extend_navigation(navigation_node $navref, stdClass $course, stdClass $module, cm_info $cm)
+function npumoodlestat_extend_navigation(navigation_node $navref, stdClass $course, stdClass $module, cm_info $cm)
 {
     // TODO Delete this function and its docblock, or implement it.
 }
 
 /**
- * Extends the settings navigation with the widget settings
+ * Extends the settings navigation with the npumoodlestat settings
  *
- * This function is called when the context for the page is a widget module. This is not called by AJAX
+ * This function is called when the context for the page is a npumoodlestat module. This is not called by AJAX
  * so it is safe to rely on the $PAGE.
  *
  * @param settings_navigation $settingsnav complete settings navigation tree
- * @param navigation_node $widgetnode widget administration node
+ * @param navigation_node $npumoodlestatnode npumoodlestat administration node
  */
-function widget_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $widgetnode = null)
+function npumoodlestat_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $npumoodlestatnode = null)
 {
     // TODO Delete this function and its docblock, or implement it.
 }

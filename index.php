@@ -20,12 +20,12 @@
  * You can have a rather longer description of the file as well,
  * if you like, and it can span multiple lines.
  *
- * @package    mod_widget
+ * @package    mod_npumoodlestat
  * @copyright  2016 Your Name <your@email.address>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Replace widget with the name of your module and remove this line.
+// Replace npumoodlestat with the name of your module and remove this line.
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(__FILE__) . '/lib.php');
@@ -39,12 +39,12 @@ require_course_login($course);
 $params = array(
     'context' => context_course::instance($course->id)
 );
-$event = \mod_widget\event\course_module_instance_list_viewed::create($params);
+$event = \mod_npumoodlestat\event\course_module_instance_list_viewed::create($params);
 $event->add_record_snapshot('course', $course);
 $event->trigger();
 
-$strname = get_string('modulenameplural', 'mod_widget');
-$PAGE->set_url('/mod/widget/index.php', array('id' => $id));
+$strname = get_string('modulenameplural', 'mod_npumoodlestat');
+$PAGE->set_url('/mod/npumoodlestat/index.php', array('id' => $id));
 $PAGE->navbar->add($strname);
 $PAGE->set_title("$course->shortname: $strname");
 $PAGE->set_heading($course->fullname);
@@ -53,8 +53,8 @@ $PAGE->set_pagelayout('incourse');
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strname);
 
-if (!$widgets = get_all_instances_in_course('widget', $course)) {
-    notice(get_string('nowidgets', 'widget'), new moodle_url('/course/view.php', array('id' => $course->id)));
+if (!$npumoodlestats = get_all_instances_in_course('npumoodlestat', $course)) {
+    notice(get_string('nonpumoodlestats', 'npumoodlestat'), new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
 $usesections = course_format_uses_sections($course->format);
@@ -73,7 +73,7 @@ if ($usesections) {
 
 $modinfo = get_fast_modinfo($course);
 $currentsection = '';
-foreach ($modinfo->instances['widget'] as $cm) {
+foreach ($modinfo->instances['npumoodlestat'] as $cm) {
     $row = array();
     if ($usesections) {
         if ($cm->sectionnum !== $currentsection) {

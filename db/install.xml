@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PATH="mod/widget/db" VERSION="20101203"
-       COMMENT="XMLDB file for Moodle mod/widget"
+<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PATH="mod/npumoodlestat/db" VERSION="20101203"
+       COMMENT="XMLDB file for Moodle mod/npumoodlestat"
        xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
     <TABLES>
-        <TABLE NAME="widget" COMMENT="Default comment for widget, please edit me">
+        <TABLE NAME="npumoodlestat" COMMENT="Default comment for npumoodlestat, please edit me">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
                 <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"
-                       COMMENT="Course widget activity belongs to"/>
+                       COMMENT="Course npumoodlestat activity belongs to"/>
                 <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"
                        COMMENT="name field for moodle instances"/>
                 <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false"
-                       COMMENT="General introduction of the widget activity"/>
+                       COMMENT="General introduction of the npumoodlestat activity"/>
                 <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0"
                        SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>

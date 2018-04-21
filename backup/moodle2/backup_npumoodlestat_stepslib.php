@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Define all the backup steps that will be used by the backup_widget_activity_task
+ * Define all the backup steps that will be used by the backup_npumoodlestat_activity_task
  *
- * @package   mod_widget
+ * @package   mod_npumoodlestat
  * @category  backup
  * @copyright 2016 Your Name <your@email.address>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,14 +26,14 @@
 defined('MOODLE_INTERNAL') || die;
 
 /**
- * Define the complete widget structure for backup, with file and id annotations
+ * Define the complete npumoodlestat structure for backup, with file and id annotations
  *
- * @package   mod_widget
+ * @package   mod_npumoodlestat
  * @category  backup
  * @copyright 2016 Your Name <your@email.address>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_widget_activity_structure_step extends backup_activity_structure_step
+class backup_npumoodlestat_activity_structure_step extends backup_activity_structure_step
 {
 
     /**
@@ -47,22 +47,22 @@ class backup_widget_activity_structure_step extends backup_activity_structure_st
         // Get know if we are including userinfo.
         $userinfo = $this->get_setting_value('userinfo');
 
-        // Define the root element describing the widget instance.
-        $widget = new backup_nested_element('widget', array('id'), array(
+        // Define the root element describing the npumoodlestat instance.
+        $npumoodlestat = new backup_nested_element('npumoodlestat', array('id'), array(
             'name', 'intro', 'introformat', 'grade'));
 
         // If we had more elements, we would build the tree here.
 
         // Define data sources.
-        $widget->set_source_table('widget', array('id' => backup::VAR_ACTIVITYID));
+        $npumoodlestat->set_source_table('npumoodlestat', array('id' => backup::VAR_ACTIVITYID));
 
         // If we were referring to other tables, we would annotate the relation
         // with the element's annotate_ids() method.
 
         // Define file annotations (we do not use itemid in this example).
-        $widget->annotate_files('mod_widget', 'intro', null);
+        $npumoodlestat->annotate_files('mod_npumoodlestat', 'intro', null);
 
-        // Return the root element (widget), wrapped into standard activity structure.
-        return $this->prepare_activity_structure($widget);
+        // Return the root element (npumoodlestat), wrapped into standard activity structure.
+        return $this->prepare_activity_structure($npumoodlestat);
     }
 }

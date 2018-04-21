@@ -15,23 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Define all the restore steps that will be used by the restore_widget_activity_task
+ * Define all the restore steps that will be used by the restore_npumoodlestat_activity_task
  *
- * @package   mod_widget
+ * @package   mod_npumoodlestat
  * @category  backup
  * @copyright 2016 Your Name <your@email.address>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Structure step to restore one widget activity
+ * Structure step to restore one npumoodlestat activity
  *
- * @package   mod_widget
+ * @package   mod_npumoodlestat
  * @category  backup
  * @copyright 2016 Your Name <your@email.address>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_widget_activity_structure_step extends restore_activity_structure_step
+class restore_npumoodlestat_activity_structure_step extends restore_activity_structure_step
 {
 
     /**
@@ -43,7 +43,7 @@ class restore_widget_activity_structure_step extends restore_activity_structure_
     {
 
         $paths = array();
-        $paths[] = new restore_path_element('widget', '/activity/widget');
+        $paths[] = new restore_path_element('npumoodlestat', '/activity/npumoodlestat');
 
         // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);
@@ -54,7 +54,7 @@ class restore_widget_activity_structure_step extends restore_activity_structure_
      *
      * @param array $data parsed element data
      */
-    protected function process_widget($data)
+    protected function process_npumoodlestat($data)
     {
         global $DB;
 
@@ -75,8 +75,8 @@ class restore_widget_activity_structure_step extends restore_activity_structure_
             $data->grade = -($this->get_mappingid('scale', abs($data->grade)));
         }
 
-        // Create the widget instance.
-        $newitemid = $DB->insert_record('widget', $data);
+        // Create the npumoodlestat instance.
+        $newitemid = $DB->insert_record('npumoodlestat', $data);
         $this->apply_activity_instance($newitemid);
     }
 
@@ -85,7 +85,7 @@ class restore_widget_activity_structure_step extends restore_activity_structure_
      */
     protected function after_execute()
     {
-        // Add widget related files, no need to match by itemname (just internally handled context).
-        $this->add_related_files('mod_widget', 'intro', null);
+        // Add npumoodlestat related files, no need to match by itemname (just internally handled context).
+        $this->add_related_files('mod_npumoodlestat', 'intro', null);
     }
 }
