@@ -7,14 +7,11 @@ build_dir="build"
 files_to_move=(
 "db"
 "lang"
-"index.php"
-"lib.php"
 "db"
-"locallib.php"
-"mod_form.php"
-"README.txt"
+"block_npumoodlestat.php"
+"edit_form.php"
+"settings.php"
 "version.php"
-"view.php"
 )
 
 if [ ! -d ${build_dir} ];
@@ -29,6 +26,8 @@ do
 	cp -r ${entity} ${build_dir}/${module_name}
 done
 
-zip -r build/${module_name}_$(date '+%d%m%Y %H%M%S') ${build_dir}/${module_name}
+rm ${build_dir}/${module_name}/access.php
+
+zip -r ${build_dir}/${module_name}_$(date '+%H%M%d%m%Y') ${build_dir}/${module_name}
 
 rm -rf ${build_dir}/${module_name}
