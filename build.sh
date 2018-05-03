@@ -5,13 +5,8 @@ module_name="npumoodlestat"
 build_dir="build"
 
 files_to_move=(
-"backup"
-"classes"
 "db"
 "lang"
-"pix"
-"tests"
-"grade.php"
 "index.php"
 "lib.php"
 "locallib.php"
