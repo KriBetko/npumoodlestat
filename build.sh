@@ -14,6 +14,8 @@ files_to_move=(
 "version.php"
 )
 
+root=$PWD
+
 if [ ! -d ${build_dir} ];
 then
     mkdir ${build_dir}
@@ -28,6 +30,8 @@ done
 
 rm ${build_dir}/${module_name}/access.php
 
-zip -r ${build_dir}/${module_name}_$(date '+%H%M%d%m%Y') ${build_dir}/${module_name}
+cd ${build_dir}
 
-rm -rf ${build_dir}/${module_name}
+zip -r ${module_name}_$(date '+%H%M%d%m%Y') ${module_name}
+
+rm -rf ${root}/${build_dir}/${module_name}
