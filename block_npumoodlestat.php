@@ -69,6 +69,8 @@ class block_npumoodlestat extends block_base
             $this->content->text .= $this->config->text;
         }
 
+        $this->content->footer = '<strong>TEST</strong>';
+
         return $this->content;
     }
 

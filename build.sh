@@ -10,7 +10,6 @@ files_to_move=(
 "db"
 "block_npumoodlestat.php"
 "edit_form.php"
-"settings.php"
 "version.php"
 )
 
