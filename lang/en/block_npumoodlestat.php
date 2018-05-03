@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,30 +16,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Provides code to be executed during the module installation
+ * Strings for component 'block_npumoodlestat', language 'en'
  *
- * This file replaces the legacy STATEMENTS section in db/install.xml,
- * lib.php/modulename_install() post installation hook and partially defaults.php.
- *
- * @package    mod_npumoodlestat
- * @copyright  2016 Your Name <your@email.address>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   block_npumoodlestat
+ * @copyright Daniel Neis <danielneis@gmail.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * Post installation procedure
- *
- * @see upgrade_plugins_modules()
- */
-function xmldb_npumoodlestat_install()
-{
-}
-
-/**
- * Post installation recovery procedure
- *
- * @see upgrade_plugins_modules()
- */
-function xmldb_npumoodlestat_install_recovery()
-{
-}
+$string['blockstring'] = 'Block string';
+$string['descconfig'] = 'Description of the config section';
+$string['descfoo'] = 'Config description';
+$string['headerconfig'] = 'Config section header';
+$string['labelfoo'] = 'Config label';
+$string['npumoodlestat:addinstance'] = 'Add a newblock block';
+$string['npumoodlestat:myaddinstance'] = 'Add a newblock block to my moodle';
+$string['pluginname'] = 'Newblock';

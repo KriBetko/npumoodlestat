@@ -15,22 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the version and other meta-info about the plugin
- *
- * Setting the $plugin->version to 0 prevents the plugin from being installed.
- * See https://docs.moodle.org/dev/version.php for more info.
+ * Version details
  *
  * @package    block_npumoodlestat
- * @copyright  2016 Your Name <kribetk@gmail.com>
+ * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_npumoodlestat';
-$plugin->version = 20180421;
-$plugin->release = 'v0.1';
-$plugin->requires = 2014051200;
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->cron = 0;
-$plugin->dependencies = [];
+$plugin->version = 2017011300;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->requires = 2012112900;        // Requires this Moodle version
+$plugin->component = 'block_npumoodlestat'; // Full name of the plugin (used for diagnostics)
