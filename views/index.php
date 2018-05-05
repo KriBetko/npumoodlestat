@@ -94,17 +94,14 @@ try {
     </div>
 </section>
 
-<section class="my-section">
-    <div class="my-container">
-        <h1 class="my-title">
-            Статистика
-        </h1>
-    </div>
-</section>
-
 <?PHP
 
-if ($_POST['submit']) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    echo
+    '<section class="my-section">',
+    '<div class="my-container">',
+    ' <h1 class="my-title">Статистика</h1>';
+
     $from = strtotime($_POST['from']);
     $to = strtotime($_POST['to']);
 
@@ -115,7 +112,7 @@ if ($_POST['submit']) {
     }
 
     if ($coursesInCategory) {
-        echo '<table class="my-table my-is-bordered">';
+        echo '<table class="my-table my-is-bordered my-is-fullwidth">';
 
         echo '<thead>', '<tr>';
         echo '<th>', 'Назва курсу', '</th>';
@@ -219,6 +216,10 @@ if ($_POST['submit']) {
     {
         return '<td style="color: red;">' . $message . '</td>';
     }
+
+    echo
+    '</div>',
+    '</section>';
 }
 ?>
 
