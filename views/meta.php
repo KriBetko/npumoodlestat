@@ -28,28 +28,28 @@ $categor = $DB->get_records('subcourse', null);
         });
     </script>
 
-    <select name='cat'>
-        <?PHP
-        $stack = array();
-        foreach ($categor as $c) {
-            array_push($stack, $c->course);
-        }
-        $result = array_unique($stack);
-        $coursewith = $DB->get_records('course', null);
-        end($result);
-        foreach ($coursewith as $b) {
-            for ($x = 0; $x <= key($result); $x++) {
-                if ($b->id == $result[$x]) {
-                    print "<option value=' " . $b->id . " '>" . $b->fullname . "</option>";
-                }
+    <select name='cat'></select>
+    <?PHP
+    $stack = array();
+    foreach ($categor as $c) {
+        array_push($stack, $c->course);
+    }
+    $result = array_unique($stack);
+    $coursewith = $DB->get_records('course', null);
+    end($result);
+    foreach ($coursewith as $b) {
+        for ($x = 0; $x <= key($result); $x++) {
+            if ($b->id == $result[$x]) {
+                print "<option value=' " . $b->id . " '>" . $b->fullname . "</option>";
             }
         }
-        print_r($stack);
-        print_r($result);
-        echo key($result);
-        ?>
-        </br>
-        <input type="submit" name="button1" value="Go" onclick="week(form1)">
+    }
+    print_r($stack);
+    print_r($result);
+    echo key($result);
+    ?>
+    </br>
+    <input type="submit" name="button1" value="Go" onclick="week(form1)">
 
 </form>
 <?PHP

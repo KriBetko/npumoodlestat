@@ -28,14 +28,14 @@ $categor = $DB->get_records('course_categories', null);
         });
     </script>
 
-    <select name='cat'>
-        <?PHP
-        foreach ($categor as $c) {
-            print "<option value=' " . $c->id . " '>" . $c->name . "</option>";
-        }
-        ?>
-        </br>
-        <input type="submit" name="button1" value="Go" onclick="week(form1)">
+    <select name='cat'></select>
+    <?PHP
+    foreach ($categor as $c) {
+        print "<option value=' " . $c->id . " '>" . $c->name . "</option>";
+    }
+    ?>
+    </br>
+    <input type="submit" name="button1" value="Go" onclick="week(form1)">
 
 </form>
 <?PHP
