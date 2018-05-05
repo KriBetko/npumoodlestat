@@ -3,6 +3,7 @@
     <words>
       <w>bulma</w>
       <w>contextid</w>
+      <w>contextinstanceid</w>
       <w>contextlevel</w>
       <w>courseid</w>
       <w>cssmin</w>
@@ -16,6 +17,7 @@
       <w>npumoodlestat</w>
       <w>roleid</w>
       <w>simplehtml</w>
+      <w>subcourse</w>
       <w>tbody</w>
       <w>tfoot</w>
       <w>thead</w>
