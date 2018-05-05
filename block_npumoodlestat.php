@@ -19,15 +19,15 @@ class block_npumoodlestat extends block_base
         $this->content->footer .=
             html_writer::link(
                 new moodle_url('/local/npumoodlestat/index.php'),
-                html_writer::tag('button', get_string('Статистика за категорiями')),
-                ['type' => 'button']
+                html_writer::tag('my-button', get_string('Статистика за категорiями')),
+                ['type' => 'my-button']
             );
 
         $this->content->footer .=
             html_writer::link(
                 new moodle_url('/local/npumoodlestat/meta.php'),
-                html_writer::tag('button', get_string('Статистика за мета курсами')),
-                ['type' => 'button']
+                html_writer::tag('my-button', get_string('Статистика за мета курсами')),
+                ['type' => 'my-button']
             );
 
         return $this->content;

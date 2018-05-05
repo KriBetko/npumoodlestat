@@ -1,43 +1,95 @@
-﻿<html>
+﻿<!DOCTYPE html>
+<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8">
     <title>NPU Stat</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <?PHP
-//require_once(dirname(dirname(__FILE__)).'/config.php');
+/** @noinspection PhpIncludeInspection */
 require_once('../../config.php');
-echo $OUTPUT->header();
-$categor = $DB->get_records('course_categories', null);
+
+try {
+    echo $OUTPUT->header();
+} catch (coding_exception $e) {
+    //echo $e->getMessage();
+}
+
+try {
+    $categories = $DB->get_records('course_categories', null);
+} catch (dml_exception $e) {
+    echo $e->getMessage();
+}
 ?>
-<form name='form1' method="post">
-    <!--<input type='text' name='from' value = '01-01-2000'>
-    <input type='text' name='to' value = 'now'>-->
-    <input type="date" name="from" id="from" value="2012-01-01" min="2012-01-01">
-    <input type="date" name="to" id="to" value="">
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var d = new Date();
-            var day = d.getDate() + 1;
-            if (day < 10) day = "0" + day;
-            var month = d.getMonth() + 1;
-            if (month < 10) month = "0" + month;
-            var year = d.getFullYear();
-            var name_input = year + "-" + month + "-" + day;
-            document.getElementById('to').value = name_input;
-        });
-    </script>
 
-    <select name='cat'></select>
-    <?PHP
-    foreach ($categor as $c) {
-        print "<option value=' " . $c->id . " '>" . $c->name . "</option>";
-    }
-    ?>
-    </br>
-    <input type="submit" name="button1" value="Go" onclick="week(form1)">
+<section class="my-section">
+    <div class="my-container">
+        <h1 class="my-title">
+            Статистика по категоріям
+        </h1>
 
-</form>
+        <form name="form" method="post">
+            <div class="my-field">
+                <label class="my-label" for="from">Від</label>
+                <div class="my-control">
+                    <input class="my-input"
+                           type="date"
+                           name="from"
+                           id="from"
+                           value="2012-01-01"
+                           min="2012-01-01">
+                </div>
+            </div>
+
+            <div class="my-field">
+                <label class="my-label" for="to">До</label>
+                <div class="my-control">
+                    <input class="my-input"
+                           type="date"
+                           name="to"
+                           id="to">
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var d = new Date();
+                    var day = d.getDate() + 1;
+                    if (day < 10) day = "0" + day;
+                    var month = d.getMonth() + 1;
+                    if (month < 10) month = "0" + month;
+                    var year = d.getFullYear();
+                    var name_input = year + "-" + month + "-" + day;
+                    document.getElementById('to').value = name_input;
+                });
+            </script>
+
+            <div class="my-field">
+                <div class="my-control">
+                    <label class="my-label" for="category">Категорія</label>
+                    <select name="category">
+                        <?php
+                        foreach ($categories as $category) {
+                            echo "<option value='" . $category->id . "'>" . $category->name . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <div class="my-field">
+                <div class="my-control">
+                    <button type="submit" name="submit" class="my-button is-link">Submit</button>
+                </div>
+            </div>
+
+            <!--<input type="submit" name="button1" value="Go" onclick="week(form)">-->
+        </form>
+    </div>
+</section>
+
 <?PHP
 
 if ($_POST['button1']) {
@@ -45,6 +97,7 @@ if ($_POST['button1']) {
     $to = strtotime($_POST['to']);
 
     $course = $DB->get_records('course', array('category' => $_POST['cat']));
+
     echo "<table border = 1>";
     echo "<td>", "Назва курсу", "</td>";
     echo "<td>", "Кiлькiсть вiдвiдувань", "</td>";
