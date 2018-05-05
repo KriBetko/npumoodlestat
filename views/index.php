@@ -104,8 +104,6 @@ try {
 
 <?PHP
 
-var_dump($_POST);
-
 if ($_POST['submit']) {
     $from = strtotime($_POST['from']);
     $to = strtotime($_POST['to']);
@@ -138,7 +136,14 @@ if ($_POST['submit']) {
         echo '<tbody>';
 
         foreach ($coursesInCategory as $courseInCategory) {
-            echo '<tr>', '<td>', $courseInCategory->fullname, '</td>';
+            /** @noinspection HtmlUnknownTarget */
+            echo
+            '<tr>',
+            '<td>',
+                '<a href="' . '/course/view.php?id=' . $courseInCategory->id . '">',
+            $courseInCategory->fullname,
+            '</a>',
+            '</td>';
 
             try {
                 $coursesByFullName = $DB->get_records('course', ['fullname' => $courseInCategory->fullname]);
@@ -199,8 +204,6 @@ if ($_POST['submit']) {
                     if ($courseModules) {
                         $countOfCourseModules = count($courseModules);
                     }
-
-                    echo '<td>', $countOfCourseModules, '</td>';
                 }
             }
 
