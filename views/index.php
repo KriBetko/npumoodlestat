@@ -178,7 +178,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($courseContexts) {
                         foreach ($courseContexts as $courseContext) {
                             try {
-                                $courseStudents = $DB->get_records('role_assignments', ['roleid' => 5, 'contextid' => $courseContext->id]);
+                                $courseStudents = $DB->get_record_sql(
+                                    'SELECT * from mdl_role_assignments WHERE roleid = ? AND contextid = ? AND timemodified > ? AND timemodified < ?', [
+                                    5, $courseContext->id, $from, $to
+                                ]);
                             } catch (dml_exception $e) {
                                 echo error($e->getMessage());
                             }
@@ -190,7 +193,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     echo '<td>', $countOfStudents, '</td>';
-                    echo '<td>', round($countOfViews / $countOfStudents), '</td>';
+
+                    if ($countOfViews == 0 || $countOfStudents == 0) {
+                        echo '<td>0</td>';
+                    } else {
+                        echo '<td>', round($countOfViews / $countOfStudents), '</td>';
+                    }
 
                     try {
                         $courseModules = $DB->get_records_sql('SELECT * FROM mdl_course_modules WHERE course = ?', [$courseByFullName->id]);
