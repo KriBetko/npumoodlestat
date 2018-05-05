@@ -1,1 +1,4 @@
 /build/
+/node_modules/
+/views/assets/style/*.css
+/.idea/dataSources

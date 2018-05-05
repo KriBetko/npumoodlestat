@@ -5,7 +5,7 @@
 </head>
 <body>
 <?PHP
-//require_once(dirname(dirname(__FILE__)).'/config.php');
+/** @noinspection PhpIncludeInspection */
 require_once('../../config.php');
 echo $OUTPUT->header();
 $categor = $DB->get_records('subcourse', null);

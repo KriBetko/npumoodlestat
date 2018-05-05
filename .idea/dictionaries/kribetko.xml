@@ -1,11 +1,25 @@
 <component name="ProjectDictionaryState">
   <dictionary name="kribetko">
     <words>
+      <w>bulma</w>
+      <w>contextid</w>
+      <w>contextlevel</w>
+      <w>courseid</w>
+      <w>cssmin</w>
       <w>fullhd</w>
+      <w>fullname</w>
+      <w>fullwidth</w>
+      <w>instanceid</w>
       <w>locallib</w>
+      <w>logstore</w>
       <w>moodle</w>
       <w>npumoodlestat</w>
+      <w>roleid</w>
       <w>simplehtml</w>
+      <w>tbody</w>
+      <w>tfoot</w>
+      <w>thead</w>
+      <w>timecreated</w>
       <w>xmldb</w>
     </words>
   </dictionary>

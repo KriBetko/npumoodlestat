@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>NPU Stat</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/style/bulma.min.css">
+    <link rel="stylesheet" href="assets/style/style.min.css">
 </head>
 <body>
 
@@ -14,13 +15,13 @@ require_once('../../config.php');
 try {
     echo $OUTPUT->header();
 } catch (coding_exception $e) {
-    //echo $e->getMessage();
+    echo '<p style="color: red;">' . $e->getMessage() . '</p>';
 }
 
 try {
     $categories = $DB->get_records('course_categories', null);
 } catch (dml_exception $e) {
-    echo $e->getMessage();
+    echo '<p style="color: red;">' . $e->getMessage() . '</p>';
 }
 ?>
 
@@ -31,110 +32,197 @@ try {
         </h1>
 
         <form name="form" method="post">
-            <div class="my-field">
-                <label class="my-label" for="from">Від</label>
-                <div class="my-control">
-                    <input class="my-input"
-                           type="date"
-                           name="from"
-                           id="from"
-                           value="2012-01-01"
-                           min="2012-01-01">
+
+            <div class="my-field my-is-horizontal">
+                <div class="my-field-label my-is-normal">
+                    <label class="my-label">Дата</label>
+                </div>
+                <div class="my-field-body">
+                    <div class="my-field">
+                        <p class="my-control my-is-expanded">
+                            <?php
+                            if ($_POST['submit']) {
+                                echo '<input class="my-input" type="date" name="from" value="' . $_POST['from'] . '"">';
+                            } else {
+                                echo '<input class="my-input" type="date" name="from">';
+                            }
+                            ?>
+                        </p>
+                    </div>
+                    <div class="my-field">
+                        <p class="my-control my-is-expanded">
+                            <?php
+                            if ($_POST['submit']) {
+                                echo '<input class="my-input" type="date" name="to" value="' . $_POST['to'] . '"">';
+                            } else {
+                                echo '<input class="my-input" type="date" name="to">';
+                            }
+                            ?>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="my-field my-is-horizontal">
+                <div class="my-field-label my-is-normal">
+                    <label class="my-label">Категорія</label>
+                </div>
+                <div class="my-field-body">
+                    <div class="my-field">
+                        <div class="my-control my-is-expanded">
+                            <div class="my-select my-is-fullwidth">
+                                <!--suppress HtmlFormInputWithoutLabel -->
+                                <select name="category">
+                                    <?php
+                                    foreach ($categories as $category) {
+                                        echo "<option value='" . $category->id . "'>" . $category->name . "</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="my-field">
-                <label class="my-label" for="to">До</label>
                 <div class="my-control">
-                    <input class="my-input"
-                           type="date"
-                           name="to"
-                           id="to">
+                    <input type="submit" name="submit" class="my-button my-is-link">
                 </div>
             </div>
-
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    var d = new Date();
-                    var day = d.getDate() + 1;
-                    if (day < 10) day = "0" + day;
-                    var month = d.getMonth() + 1;
-                    if (month < 10) month = "0" + month;
-                    var year = d.getFullYear();
-                    var name_input = year + "-" + month + "-" + day;
-                    document.getElementById('to').value = name_input;
-                });
-            </script>
-
-            <div class="my-field">
-                <div class="my-control">
-                    <label class="my-label" for="category">Категорія</label>
-                    <select name="category">
-                        <?php
-                        foreach ($categories as $category) {
-                            echo "<option value='" . $category->id . "'>" . $category->name . "</option>";
-                        }
-                        ?>
-                    </select>
-                </div>
-            </div>
-
-            <div class="my-field">
-                <div class="my-control">
-                    <button type="submit" name="submit" class="my-button is-link">Submit</button>
-                </div>
-            </div>
-
-            <!--<input type="submit" name="button1" value="Go" onclick="week(form)">-->
         </form>
+    </div>
+</section>
+
+<section class="my-section">
+    <div class="my-container">
+        <h1 class="my-title">
+            Статистика
+        </h1>
     </div>
 </section>
 
 <?PHP
 
-if ($_POST['button1']) {
+var_dump($_POST);
+
+if ($_POST['submit']) {
     $from = strtotime($_POST['from']);
     $to = strtotime($_POST['to']);
 
-    $course = $DB->get_records('course', array('category' => $_POST['cat']));
+    try {
+        $coursesInCategory = $DB->get_records('course', ['category' => $_POST['category']]);
+    } catch (dml_exception $e) {
+        echo error($e->getMessage());
+    }
 
-    echo "<table border = 1>";
-    echo "<td>", "Назва курсу", "</td>";
-    echo "<td>", "Кiлькiсть вiдвiдувань", "</td>";
-    echo "<td>", "Зареестровано студентiв", "</td>";
-    echo "<td>", "Коеф. вiдвiдуваностi", "</td>";
-    echo "<td>", "Кiлькiсть видiв дiяльностi", "</td>";
-    foreach ($course as $c1) {
-        $course_name = $DB->get_records('course', array('fullname' => $c1->fullname));
-        foreach ($course_name as $c2) {
-            //$views = $DB->get_records('logstore_standard_log',array('action'=>'viewed', 'target'=>'course', 'courseid'=>$c2->id));
-            $views = $DB->get_records_sql('SELECT * FROM {logstore_standard_log} WHERE action = ? AND target = ? AND courseid = ? AND timecreated > ? AND timecreated < ?', array('viewed', 'course', $c2->id, $from, $to));
-            $stud = $DB->get_records('context', array('contextlevel' => 50, 'instanceid' => $c2->id));
-            foreach ($stud as $c4) {
-                $stud2 = $DB->get_records('role_assignments', array('roleid' => 5, 'contextid' => $c4->id));
-                $count2 = 0;
-                $count = 0;
-                $count3 = 0;
-                foreach ($stud2 as $c5) {
-                    $count2++;
+    if ($coursesInCategory) {
+        echo '<table class="my-table my-is-bordered">';
+
+        echo '<thead>', '<tr>';
+        echo '<th>', 'Назва курсу', '</th>';
+        echo '<th>', 'Кiлькiсть вiдвiдувань', "</th>";
+        echo '<th>', 'Зареестровано студентiв', "</th>";
+        echo '<th>', 'Коеф. вiдвiдуваностi', "</th>";
+        echo '<th>', 'Кiлькiсть видiв дiяльностi', "</th>";
+        echo '</tr>', '</thead>';
+
+        echo '<tfoot>', '<tr>';
+        echo '<th>', 'Назва курсу', '</th>';
+        echo '<th>', 'Кiлькiсть вiдвiдувань', "</th>";
+        echo '<th>', 'Зареестровано студентiв', "</th>";
+        echo '<th>', 'Коеф. вiдвiдуваностi', "</th>";
+        echo '<th>', 'Кiлькiсть видiв дiяльностi', "</th>";
+        echo '</tr>', '</tfoot>';
+
+        echo '<tbody>';
+
+        foreach ($coursesInCategory as $courseInCategory) {
+            echo '<tr>', '<td>', $courseInCategory->fullname, '</td>';
+
+            try {
+                $coursesByFullName = $DB->get_records('course', ['fullname' => $courseInCategory->fullname]);
+            } catch (dml_exception $e) {
+                echo error($e->getMessage());
+            }
+
+            if ($coursesByFullName) {
+                $countOfViews = 0;
+                $countOfStudents = 0;
+                $countOfCourseModules = 0;
+
+                foreach ($coursesByFullName as $courseByFullName) {
+                    try {
+                        $views = $DB->get_records_sql(
+                            'SELECT * FROM mdl_logstore_standard_log WHERE action = ? AND target = ? AND courseid = ? AND timecreated > ? AND timecreated < ?',
+                            ['viewed', 'course', $courseByFullName->id, $from, $to]
+                        );
+                    } catch (dml_exception $e) {
+                        echo error($e->getMessage());
+                    }
+
+                    if ($views) {
+                        $countOfViews = count($views);
+                    }
+
+                    echo '<td>', $countOfViews, '</td>';
+
+                    try {
+                        $courseContexts = $DB->get_records('context', ['contextlevel' => 50, 'instanceid' => $courseByFullName->id]);
+                    } catch (dml_exception $e) {
+                        echo error($e->getMessage());
+                    }
+
+                    if ($courseContexts) {
+                        foreach ($courseContexts as $courseContext) {
+                            try {
+                                $courseStudents = $DB->get_records('role_assignments', ['roleid' => 5, 'contextid' => $courseContext->id]);
+                            } catch (dml_exception $e) {
+                                echo error($e->getMessage());
+                            }
+
+                            if ($courseStudents) {
+                                $countOfStudents = count($courseStudents);
+                            }
+                        }
+                    }
+
+                    echo '<td>', $countOfStudents, '</td>';
+                    echo '<td>', round($countOfViews / $countOfStudents), '</td>';
+
+                    try {
+                        $courseModules = $DB->get_records_sql('SELECT * FROM mdl_course_modules WHERE course = ?', [$courseByFullName->id]);
+                    } catch (dml_exception $e) {
+                        echo error($e->getMessage());
+                    }
+
+                    if ($courseModules) {
+                        $countOfCourseModules = count($courseModules);
+                    }
+
+                    echo '<td>', $countOfCourseModules, '</td>';
                 }
             }
-            foreach ($views as $c3) {
-                $count++;
-            }
-            $vidu = $DB->get_records_sql('SELECT * FROM {course_modules} WHERE course = ?', array($c2->id));
-            foreach ($vidu as $gg) {
-                $count3++;
-            }
-            echo "<tr>", "<td>", $c1->fullname, "</td>";
-            echo "<td>", $count, "</td>";
-            echo "<td>", $count2, "</td>";
-            echo "<td>", round($count / $count2), "</td>";
-            echo "<td>", $count3, "</td>";
 
+            echo '</tr>';
         }
+
+        echo '</tbody>';
+    }
+
+    function error($message)
+    {
+        return '<td style="color: red;">' . $message . '</td>';
     }
 }
 ?>
+
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+
+<script src="assets/js/index.js"></script>
+
 </body>
 </html>
