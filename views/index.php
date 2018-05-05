@@ -201,7 +201,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     try {
-                        $courseModules = $DB->get_records_sql('SELECT * FROM mdl_course_modules WHERE course = ?', [$courseByFullName->id]);
+                        $courseModules = $DB->get_records_sql('SELECT * FROM mdl_course_modules WHERE course = ? AND added > ? AND added < ?', [
+                            $courseByFullName->id, $from, $to
+                        ]);
                     } catch (dml_exception $e) {
                         echo error($e->getMessage());
                     }

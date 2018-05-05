@@ -20,7 +20,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'NPU STAT';
-$string['pluginname_help'] = 'Help for block NPU STAT';
-$string['simplehtml:addinstance'] = 'Add a new block NPU STAT';
-$string['simplehtml:myaddinstance'] = 'Add a NPU STAT block to My Moodle page';
+$string['pluginname'] = 'NPU Moodle Stat';
+$string['simplehtml:addinstance'] = 'Add a new block NPU Moodle Stat';
+$string['simplehtml:myaddinstance'] = 'Add a NPU Moodle Stat block to My Moodle page';
