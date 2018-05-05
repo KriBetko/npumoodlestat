@@ -204,6 +204,8 @@ if ($_POST['submit']) {
                     if ($courseModules) {
                         $countOfCourseModules = count($courseModules);
                     }
+
+                    echo '<td>', $countOfCourseModules, '</td>';
                 }
             }
 
