@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,11 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * npumoodlestat block caps.
- *
- * @package   block_npumoodlestat
- * @copyright Daniel Neis <danielneis@gmail.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    block_npumoodlestat
+ * @copyright  -
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -27,6 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 $capabilities = array(
 
     'block/npumoodlestat:myaddinstance' => array(
+        'riskbitmask' => '',
+
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
