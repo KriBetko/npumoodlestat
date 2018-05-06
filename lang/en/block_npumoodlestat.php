@@ -21,5 +21,6 @@
  */
 
 $string['pluginname'] = 'NPU Moodle Stat';
-$string['simplehtml:addinstance'] = 'Add a new block NPU Moodle Stat';
-$string['simplehtml:myaddinstance'] = 'Add a NPU Moodle Stat block to My Moodle page';
+$string['block_title'] = 'Модуль статистики';
+$string['block_statistics_category'] = 'Статистика по категоріям';
+$string['block_statistics_course'] = 'Статистика по курсам';
