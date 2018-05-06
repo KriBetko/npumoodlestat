@@ -28,8 +28,6 @@ do
 	cp -r ${entity} ${build_dir}/${module_name}
 done
 
-rm ${build_dir}/${module_name}/access.php
-
 cd ${build_dir}
 
 zip -r ${module_name}_$(date '+%H%M%d%m%Y') ${module_name}
