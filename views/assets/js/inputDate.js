@@ -2,24 +2,37 @@ $(document).ready(function () {
     setCurrentData();
 });
 
+/**
+ * @param {Date} date
+ */
+function MyDate(date) {
+    this.day = date.getDate() + 1;
+    this.month = date.getMonth() + 1;
+    this.year = date.getFullYear();
+}
+
+/**
+ * @param {int|undefined} dayModifier
+ * @returns {string}
+ */
+MyDate.prototype.getDate = function (dayModifier) {
+    var month = this.month < 10 ? "0" + this.month : this.month;
+    var day = this.day < 10 ? "0" + (this.day - dayModifier) : this.day - dayModifier;
+
+    return this.year + "-" + month + "-" + day;
+};
+
 function setCurrentData() {
-    var d = new Date();
-    var day = d.getDate() + 1;
-    if (day < 10) day = "0" + day;
-    var month = d.getMonth() + 1;
-    if (month < 10) month = "0" + month;
-    var year = d.getFullYear();
+    var date = new MyDate(new Date());
 
     var inputFrom = $('input[name="from"]');
     var inputTo = $('input[name="to"]');
 
     if (inputFrom && inputFrom.val() === "") {
-        console.log(inputFrom.val());
-        inputFrom.val(year + "-" + month + "-" + day);
+        inputFrom.val(date.getDate(1));
     }
 
     if (inputTo && inputTo.val() === "") {
-        console.log(inputTo.val());
-        inputTo.val(year + "-" + month + "-" + day);
+        inputTo.val(date.getDate(0));
     }
 }

@@ -28,7 +28,7 @@ try {
 <section class="my-section">
     <div class="my-container">
         <h1 class="my-title">
-            Статистика по мета-курсам
+            Статистика по курсам
         </h1>
         <form name="form" method="post">
             <div class="my-field my-is-horizontal">
@@ -70,7 +70,7 @@ try {
                         <div class="my-control my-is-expanded">
                             <div class="my-select my-is-fullwidth">
                                 <!--suppress HtmlFormInputWithoutLabel -->
-                                <select name="category">
+                                <select name="course">
                                     <?php
 
                                     $stack = array();
@@ -116,110 +116,119 @@ try {
 
 <?php
 
+require "Helper.php";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    echo "<pre>", var_export($_POST), "</pre>";
-
-    echo
-    "<section class=\"my-section\">",
-    "<div class=\"my-container\">",
-    "<h1 class=\"my-title\">Статистика</h1>";
-
     $from = strtotime($_POST['from']);
     $to = strtotime($_POST['to']);
 
-    try {
-        $subCourses = $DB->get_records('subcourse', ['course' => $_POST['course']]);
-    } catch (dml_exception $e) {
-        error($e);
-    }
+    $moduleSubCourse = Helper::getSubCourseModuleId($DB);
 
-    echo "<table class=\"my-table my-is-bordered my-is-fullwidth\">";
+    if ($moduleSubCourse) {
+        try {
+            $course = $DB->get_record('course', ['id' => $_POST['course']]);
+        } catch (dml_exception $e) {
+            Helper::errorMessage($e->getMessage());
+        }
 
-    echo "<thead><tr>";
-    echo "<th>Назва пiкурсу</th>";
-    echo "<th>Кiлькiсть вiдвiдувань</th>";
-    echo "<th>Зареестровано студентiв</th>";
-    echo "</tr></thead>";
-
-    echo "<tfoot><tr>";
-    echo "<th>Назва пiкурсу</th>";
-    echo "<th>Кiлькiсть вiдвiдувань</th>";
-    echo "<th>Зареестровано студентiв</th>";
-    echo "</tr></tfoot>";
-
-    echo "<tbody>";
-
-    try {
-        $subCourseModules = $DB->get_records_sql('SELECT * FROM mdl_course_modules WHERE course = ? AND module = ?', [
-            $_POST['course'], '34'
-        ]);
-    } catch (dml_exception $e) {
-        error($e);
-    }
-
-    echo "<pre>", var_export($subCourseModules), "</pre>";
-
-    $subCourseModulesId = [];
-
-    foreach ($subCourseModules as $subCourseModule) {
-        $subCourseModulesId[] = $subCourseModule->id;
-    }
-
-    foreach ($subCourses as $index => $subCourse) {
-        echo '<tr>', "<td><a href=\"/course/view.php?id={$subCourse->id}\">{$subCourse->fullname}</a>{$index}</td>";
+        echo
+        "<section class=\"my-section\">",
+        "<div class=\"my-container\">",
+        "<h1 class=\"my-title\">Статистика для курсу ",
+        "<a href=\"/course/view.php?id=$course->id\">\"$course->fullname\"</a>",
+        "</h1>";
 
         try {
-            $subCoursesByName = $DB->get_records('subcourse', ['name' => $subCourse->name]);
+            $subCourses = $DB->get_records('subcourse', ['course' => $_POST['course']]);
         } catch (dml_exception $e) {
-            error($e);
+            Helper::errorMessage($e->getMessage());
         }
 
-        foreach ($subCoursesByName as $subCourseByName) {
-            try {
-                $views = $DB->get_records_sql('SELECT * FROM mdl_logstore_standard_log WHERE action = ? AND target = ? AND contextinstanceid = ? AND timecreated > ? AND timecreated < ?', [
-                    'viewed', 'course_module', $subCourseModulesId[$index], $from, $to
-                ]);
-            } catch (dml_exception $e) {
-                error($e);
-            }
+        if ($subCourses) {
+            echo "<table class=\"my-table my-is-bordered my-is-fullwidth\">";
 
-            $countOfViews = count($views);
+            echo "<thead><tr>";
+            echo "<th>Назва пiкурсу</th>";
+            echo "<th>Кiлькiсть вiдвiдувань</th>";
+            echo "<th>Зареестровано студентiв</th>";
+            echo "<th>Коеф. вiдвiдуваностi</th>";
+            echo "<th>Кiлькiсть видiв дiяльностi</th>";
 
-            try {
-                $subCoursesContext = $DB->get_records('context', ['contextlevel' => 50, 'instanceid' => $subCourseByName->id]);
-            } catch (dml_exception $e) {
-                error($e);
-            }
+            echo "</tr></thead>";
 
-            foreach ($subCoursesContext as $subCourseContext) {
-                try {
-                    $subCourseStudents = $DB->get_records('role_assignments', ['roleid' => 5, 'contextid' => $subCourseContext->id]);
-                } catch (dml_exception $e) {
-                    error($e);
+            echo "<tfoot><tr>";
+            echo "<th>Назва пiкурсу</th>";
+            echo "<th>Кiлькiсть вiдвiдувань</th>";
+            echo "<th>Зареестровано студентiв</th>";
+            echo "<th>Коеф. вiдвiдуваностi</th>";
+            echo "<th>Кiлькiсть видiв дiяльностi</th>";
+            echo "</tr></tfoot>";
+
+            echo "<tbody>";
+
+            $studentRoleId = Helper::getStudentRoleId($DB);
+
+            foreach ($subCourses as $subCourse) {
+                $countOfViews = 0;
+                $countOfStudents = 0;
+                $countOfCourseModules = 0;
+
+                echo "<tr>", "<td><a href=\"/course/view.php?id={$subCourse->refcourse}\">{$subCourse->name}</a></td>";
+
+                $subCourseContext = Helper::getContext($DB, $subCourse->refcourse);
+
+                if ($subCourseContext) {
+                    $subCourseStudents = Helper::getRoleAssignments($DB, $studentRoleId, $subCourseContext->id);
+
+                    if ($subCourseStudents) {
+                        $countOfStudents = count($subCourseStudents);
+                    }
                 }
 
-                $countOfStudents = count($subCourseStudents);
+                try {
+                    $views = $DB->get_records_sql(
+                        "SELECT * FROM mdl_logstore_standard_log 
+                              WHERE action = 'viewed'
+                              AND target = 'course' 
+                              AND courseid = ? 
+                              AND timecreated > ? 
+                              AND timecreated < ?",
+                        [$subCourse->refcourse, $from, $to]
+                    );
+                } catch (dml_exception $e) {
+                    Helper::errorMessage($e->getMessage());
+                }
+
+                $countOfViews = count($views);
+
+                $courseModules = Helper::getCourseModules($DB, $subCourse->refcourse);
+
+                if ($courseModules) {
+                    $countOfCourseModules = count($courseModules);
+                }
+
+                echo "<td>{$countOfViews}</td>";
+                echo "<td>{$countOfStudents}</td>";
+
+                if ($countOfViews == 0 || $countOfStudents == 0) {
+                    echo '<td>0</td>';
+                } else {
+                    echo '<td>', round($countOfViews / $countOfStudents), '</td>';
+                }
+
+                echo '<td>', $countOfCourseModules, '</td>';
+
+                echo "</tr>";
             }
 
-            echo "<tr><td>{$subCourse->name} {$subCourseModulesId[$index]}</td>";
-            echo "<td>{$countOfViews}</td>";
-            echo "<td>{$countOfStudents}</td>";
+            echo "</tbody>";
+            echo "</table>";
         }
 
-        echo "</tr>";
-    }
-
-    echo "</tbody>";
-    echo "</table>";
-    echo "</div>";
-    echo "</section>";
-
-    /**
-     * @param moodle_exception $exception
-     */
-    function error($exception)
-    {
-        echo "<pre style=\"color: red;\">{$exception->getMessage()}</pre>";
+        echo "</div>";
+        echo "</section>";
+    } else {
+        Helper::errorMessage('Module "subcourse" nor fount on your Moodle');
     }
 }
 ?>

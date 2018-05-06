@@ -25,7 +25,7 @@ class block_npumoodlestat extends block_base
 
         $this->content->footer .=
             html_writer::link(
-                new moodle_url('/local/npumoodlestat/meta.php'),
+                new moodle_url('/local/npumoodlestat/course.php'),
                 html_writer::tag('my-button', get_string('Статистика за мета курсами')),
                 ['type' => 'my-button']
             );
