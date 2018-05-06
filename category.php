@@ -10,7 +10,7 @@
 
 <?PHP
 /** @noinspection PhpIncludeInspection */
-require_once('../../config.php');
+require(__DIR__ . '/../../config.php');
 
 try {
     echo $OUTPUT->header();

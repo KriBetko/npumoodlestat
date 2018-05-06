@@ -17,14 +17,13 @@
 /**
  * Version details
  *
- * @package    block_npumoodlestat
- * @subpackage block
- * @copyright  -
+ * @package    report_npumoodlestat
+ * @copyright  2018 Ivan Kolodrivskiy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2018050600;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version = 2018050601;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires = 2016051900;        // Requires this Moodle version
-$plugin->component = 'block_npumoodlestat'; // Full name of the plugin (used for diagnostics)
+$plugin->component = 'report_npumoodlestat'; // Full name of the plugin (used for diagnostics)

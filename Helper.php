@@ -2,6 +2,8 @@
 
 class Helper
 {
+    const moduleName = 'report_npumoodlestat';
+
     public static function dump($variable)
     {
         echo "<pre>", var_export($variable), "</pre>";
@@ -131,5 +133,31 @@ class Helper
         }
 
         return $modules;
+    }
+
+    /**
+     * @param string $stringIdentifier
+     * @return string
+     */
+    public static function getString($stringIdentifier)
+    {
+        try {
+            return get_string($stringIdentifier, self::moduleName);
+        } catch (coding_exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * @param string $url
+     * @return moodle_url|null
+     */
+    public static function getUrl($url)
+    {
+        try {
+            return new moodle_url($url);
+        } catch (moodle_exception $e) {
+            return null;
+        }
     }
 }

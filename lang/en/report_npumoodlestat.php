@@ -15,8 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   block_npumoodlestat
- * @copyright -
+ * @package   report_npumoodlestat
+ * @copyright 2018 Ivan Kolodrivskiy
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

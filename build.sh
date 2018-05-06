@@ -5,10 +5,12 @@ module_name="npumoodlestat"
 build_dir="build"
 
 files_to_move=(
-"db"
+"assets"
 "lang"
-"db"
-"block_npumoodlestat.php"
+"category.php"
+"course.php"
+"Helper.php"
+"settings.php"
 "version.php"
 )
 

@@ -7,14 +7,14 @@ var cssmin = require('gulp-cssmin');
 var rename = require('gulp-rename');
 
 gulp.task('sass', function () {
-    return gulp.src('./views/assets/style/*.scss')
+    return gulp.src('./assets/style/*.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(cssPrefix('my-'))
         .pipe(cssmin())
         .pipe(rename({suffix: '.min'}))
-        .pipe(gulp.dest('./views/assets/style'));
+        .pipe(gulp.dest('./assets/style'));
 });
 
 gulp.task('compile:watch', function () {
-    gulp.watch('./views/assets/style/*.scss', ['sass']);
+    gulp.watch('./assets/style/*.scss', ['sass']);
 });
