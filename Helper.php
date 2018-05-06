@@ -15,6 +15,14 @@ class Helper
     }
 
     /**
+     * @param string $message
+     */
+    public static function errorMessage($message)
+    {
+        echo "<div class=\"my-notification my-is-danger\">$message</div>";
+    }
+
+    /**
      * @param moodle_database $db
      * @return int|null
      */
@@ -28,14 +36,6 @@ class Helper
         }
 
         return $role ? $role->id : $role;
-    }
-
-    /**
-     * @param string $message
-     */
-    public static function errorMessage($message)
-    {
-        echo "<div class=\"my-notification my-is-danger\">$message</div>";
     }
 
     /**
@@ -133,6 +133,71 @@ class Helper
         }
 
         return $modules;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseId
+     * @param int $timeFrom
+     * @param int $timeTo
+     * @return array|null
+     */
+    public static function getLogStoreStandardLog($db, $courseId, $timeFrom, $timeTo)
+    {
+        try {
+            $views = $db->get_records_sql(
+                "SELECT * FROM mdl_logstore_standard_log 
+                              WHERE action = 'viewed'
+                              AND target = 'course' 
+                              AND courseid = ? 
+                              AND timecreated > ? 
+                              AND timecreated < ?",
+                [
+                    $courseId,
+                    $timeFrom,
+                    $timeTo
+                ]
+            );
+        } catch (dml_exception $e) {
+            self::errorMessage($e->getMessage());
+            return null;
+        }
+
+        return $views;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseId
+     * @return array|null
+     */
+    public static function getSubCourses($db, $courseId)
+    {
+        try {
+            $subCourses = $db->get_records('subcourse', ['course' => $courseId]);
+        } catch (dml_exception $e) {
+            Helper::errorMessage($e->getMessage());
+            return null;
+        }
+
+        return $subCourses;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseId
+     * @return object|null
+     */
+    public static function getCourse($db, $courseId)
+    {
+        try {
+            $course = $db->get_record('course', ['id' => $courseId]);
+        } catch (dml_exception $e) {
+            Helper::errorMessage($e->getMessage());
+            return null;
+        }
+
+        return $course;
     }
 
     /**

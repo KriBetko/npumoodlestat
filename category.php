@@ -11,17 +11,18 @@
 <?PHP
 /** @noinspection PhpIncludeInspection */
 require(__DIR__ . '/../../config.php');
+require('Helper.php');
 
 try {
     echo $OUTPUT->header();
 } catch (coding_exception $e) {
-    echo '<p style="color: red;">' . $e->getMessage() . '</p>';
+    Helper::errorMessage($e->getMessage());
 }
 
 try {
     $categories = $DB->get_records('course_categories', null);
 } catch (dml_exception $e) {
-    echo '<p style="color: red;">' . $e->getMessage() . '</p>';
+    Helper::errorMessage($e->getMessage());
 }
 ?>
 
@@ -108,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $coursesInCategory = $DB->get_records('course', ['category' => $_POST['category']]);
     } catch (dml_exception $e) {
-        echo error($e->getMessage());
+        Helper::errorMessage($e->getMessage());
     }
 
     if ($coursesInCategory) {
@@ -145,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $coursesByFullName = $DB->get_records('course', ['fullname' => $courseInCategory->fullname]);
             } catch (dml_exception $e) {
-                echo error($e->getMessage());
+                Helper::errorMessage($e->getMessage());
             }
 
             if ($coursesByFullName) {
@@ -160,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ['viewed', 'course', $courseByFullName->id, $from, $to]
                         );
                     } catch (dml_exception $e) {
-                        echo error($e->getMessage());
+                        Helper::errorMessage($e->getMessage());
                     }
 
                     if ($views) {
@@ -172,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     try {
                         $courseContexts = $DB->get_records('context', ['contextlevel' => 50, 'instanceid' => $courseByFullName->id]);
                     } catch (dml_exception $e) {
-                        echo error($e->getMessage());
+                        Helper::errorMessage($e->getMessage());
                     }
 
                     if ($courseContexts) {
@@ -183,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     5, $courseContext->id, $from, $to
                                 ]);
                             } catch (dml_exception $e) {
-                                echo error($e->getMessage());
+                                Helper::errorMessage($e->getMessage());
                             }
 
                             if ($courseStudents) {
@@ -205,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $courseByFullName->id, $from, $to
                         ]);
                     } catch (dml_exception $e) {
-                        echo error($e->getMessage());
+                        Helper::errorMessage($e->getMessage());
                     }
 
                     if ($courseModules) {
@@ -220,11 +221,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         echo '</tbody>';
-    }
-
-    function error($message)
-    {
-        return '<td style="color: red;">' . $message . '</td>';
     }
 
     echo

@@ -122,27 +122,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $from = strtotime($_POST['from']);
     $to = strtotime($_POST['to']);
 
-    $moduleSubCourse = Helper::getSubCourseModuleId($DB);
+    $moduleSubCourseId = Helper::getSubCourseModuleId($DB);
 
-    if ($moduleSubCourse) {
-        try {
-            $course = $DB->get_record('course', ['id' => $_POST['course']]);
-        } catch (dml_exception $e) {
-            Helper::errorMessage($e->getMessage());
-        }
-
+    if ($moduleSubCourseId) {
         echo
         "<section class=\"my-section\">",
-        "<div class=\"my-container\">",
-        "<h1 class=\"my-title\">Статистика для курсу ",
-        "<a href=\"/course/view.php?id=$course->id\">\"$course->fullname\"</a>",
-        "</h1>";
+        "<div class=\"my-container\">";
 
-        try {
-            $subCourses = $DB->get_records('subcourse', ['course' => $_POST['course']]);
-        } catch (dml_exception $e) {
-            Helper::errorMessage($e->getMessage());
+        $course = Helper::getCourse($DB, $_POST['course']);
+
+        if ($course) {
+            echo "<h1 class=\"my-title\">Статистика для курсу ",
+            "<a href=\"/course/view.php?id=$course->id\">\"$course->fullname\"</a>",
+            "</h1>";
         }
+
+        $subCourses = Helper::getSubCourses($DB, $_POST['course']);
 
         if ($subCourses) {
             echo "<table class=\"my-table my-is-bordered my-is-fullwidth\">";
@@ -185,19 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
 
-                try {
-                    $views = $DB->get_records_sql(
-                        "SELECT * FROM mdl_logstore_standard_log 
-                              WHERE action = 'viewed'
-                              AND target = 'course' 
-                              AND courseid = ? 
-                              AND timecreated > ? 
-                              AND timecreated < ?",
-                        [$subCourse->refcourse, $from, $to]
-                    );
-                } catch (dml_exception $e) {
-                    Helper::errorMessage($e->getMessage());
-                }
+                $views = Helper::getLogStoreStandardLog($DB, $subCourse->refcourse, $from, $to);
 
                 $countOfViews = count($views);
 
