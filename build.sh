@@ -7,8 +7,9 @@ build_dir="build"
 files_to_move=(
 "assets"
 "lang"
+"assets"
 "category.php"
-"course.php"
+"meta.php"
 "Helper.php"
 "settings.php"
 "version.php"
@@ -25,7 +26,7 @@ fi
 
 for entity in ${files_to_move[@]}
 do
-	cp -r ${entity} ${build_dir}/${module_name}
+	cp -rv ${entity} ${build_dir}/${module_name}
 done
 
 cd ${build_dir}

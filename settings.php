@@ -21,7 +21,7 @@ $ADMIN->add('reports', new admin_externalpage(
 $ADMIN->add('reports', new admin_externalpage(
         'report_npumoodlestat',
         Helper::getString('block_title') . ' - ' . Helper::getString('block_statistics_course'),
-        Helper::getUrl('/report/npumoodlestat/course.php'))
+        Helper::getUrl('/report/npumoodlestat/meta.php'))
 );
 
 $settings = null;

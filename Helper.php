@@ -58,14 +58,23 @@ class Helper
      * @param moodle_database $db
      * @param int $roleId
      * @param int $contextId
+     * @param int $from
+     * @param int $to
      * @return array|null
      */
-    public static function getRoleAssignments($db, $roleId, $contextId)
+    public static function getRoleAssignments($db, $roleId, $contextId, $from, $to)
     {
         try {
-            $roleAssignments = $db->get_records('role_assignments', [
-                'roleid' => $roleId,
-                'contextid' => $contextId
+            $roleAssignments = $db->get_records_sql('
+                SELECT * FROM mdl_role_assignments 
+                WHERE roleid = ?
+                AND contextid = ?
+                AND timemodified > ?
+                AND timemodified < ?', [
+                $roleId,
+                $contextId,
+                $from,
+                $to
             ]);
         } catch (dml_exception $e) {
             self::errorMessage($e->getMessage());
@@ -140,9 +149,9 @@ class Helper
      * @param int $courseId
      * @param int $timeFrom
      * @param int $timeTo
-     * @return array|null
+     * @return int
      */
-    public static function getLogStoreStandardLog($db, $courseId, $timeFrom, $timeTo)
+    public static function getCountOfCourseViews($db, $courseId, $timeFrom, $timeTo)
     {
         try {
             $views = $db->get_records_sql(
@@ -160,10 +169,10 @@ class Helper
             );
         } catch (dml_exception $e) {
             self::errorMessage($e->getMessage());
-            return null;
+            return 0;
         }
 
-        return $views;
+        return count($views);
     }
 
     /**
@@ -201,6 +210,112 @@ class Helper
     }
 
     /**
+     * @param moodle_database $db
+     * @return array|null
+     */
+    public static function getCategories($db)
+    {
+        try {
+            $course = $db->get_records('course_categories', []);
+        } catch (dml_exception $e) {
+            Helper::errorMessage($e->getMessage());
+            return null;
+        }
+
+        return $course;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $categoryId
+     * @return array|null
+     */
+    public static function getCourses($db, $categoryId)
+    {
+        try {
+            $course = $db->get_records('course', ['category' => $categoryId]);
+        } catch (dml_exception $e) {
+            Helper::errorMessage($e->getMessage());
+            return null;
+        }
+
+        return $course;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseId
+     * @return array|null
+     */
+    public static function getCourseSections($db, $courseId)
+    {
+        try {
+            $sections = $db->get_records_sql("SELECT * FROM mdl_course_sections WHERE course = ? ORDER BY section ASC", [
+                $courseId
+            ]);
+        } catch (dml_exception $e) {
+            Helper::errorMessage($e->getMessage());
+            return null;
+        }
+
+        return $sections;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseId
+     * @param int $sectionId
+     * @return array|null
+     */
+    public static function getCourseModulesBySection($db, $courseId, $sectionId)
+    {
+        try {
+            $course = $db->get_records('course_modules', ['course' => $courseId, 'section' => $sectionId]);
+        } catch (dml_exception $e) {
+            Helper::errorMessage($e->getMessage());
+            return null;
+        }
+
+        return $course;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseId
+     * @param int $from
+     * @param int $to
+     * @return int
+     */
+    public static function getCountOfStudentsOnCourse($db, $courseId, $from, $to)
+    {
+        $subCourseContext = Helper::getContext($db, $courseId);
+
+        if ($subCourseContext) {
+            $studentRoleId = Helper::getStudentRoleId($db);
+            $subCourseStudents = Helper::getRoleAssignments($db, $studentRoleId, $subCourseContext->id, $from, $to);
+
+            if ($subCourseStudents) {
+                return count($subCourseStudents);
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param $course
+     * @return course_modinfo|null
+     */
+    public static function getFastModInfo($course)
+    {
+        try {
+            return get_fast_modinfo($course);
+        } catch (moodle_exception $e) {
+            return null;
+        }
+    }
+
+    /**
      * @param string $stringIdentifier
      * @return string
      */
@@ -222,6 +337,7 @@ class Helper
         try {
             return new moodle_url($url);
         } catch (moodle_exception $e) {
+            Helper::errorMessage($e->getMessage());
             return null;
         }
     }
