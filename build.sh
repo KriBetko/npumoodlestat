@@ -8,6 +8,7 @@ files_to_move=(
 "assets"
 "lang"
 "assets"
+"ajax.php"
 "category.php"
 "meta.php"
 "Helper.php"
@@ -24,10 +25,15 @@ else
     rm -rfv ${build_dir}/*
 fi
 
+gulp sass
+
 for entity in ${files_to_move[@]}
 do
 	cp -rv ${entity} ${build_dir}/${module_name}
 done
+
+rm -rf ${build_dir}/${module_name}/js
+rm -rf ${build_dir}/${module_name}/style
 
 cd ${build_dir}
 

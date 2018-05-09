@@ -315,6 +315,28 @@ class Helper
         }
     }
 
+    public static function getCoursesWithSubCoursesByCategory($db, $categoryId)
+    {
+        $result = [];
+
+        $courses = self::getCourses($db, $categoryId);
+
+        $subCourseModuleId = self::getSubCourseModuleId($db);
+
+        foreach ($courses as $course) {
+            $modInfo = Helper::getFastModInfo($course);
+
+            foreach ($modInfo->get_cms() as $module) {
+                if ($module->module === $subCourseModuleId) {
+                    array_push($result, $course);
+                    break;
+                }
+            }
+        }
+
+        return $result;
+    }
+
     /**
      * @param string $stringIdentifier
      * @return string

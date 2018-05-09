@@ -22,7 +22,7 @@ try {
 
 $categories = Helper::getCategories($DB);
 
-$courses = Helper::getCourses($DB, reset($categories)->id);
+$courses = Helper::getCoursesWithSubCoursesByCategory($DB, reset($categories)->id);
 
 ?>
 
@@ -93,7 +93,7 @@ $courses = Helper::getCourses($DB, reset($categories)->id);
                 <div class="my-field-body">
                     <div class="my-field">
                         <div class="my-control my-is-expanded">
-                            <div class="my-select my-is-fullwidth">
+                            <div class="my-select my-is-fullwidth" id="select-course">
                                 <!--suppress HtmlFormInputWithoutLabel -->
                                 <select name="course">
                                     <?php
