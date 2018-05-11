@@ -28,9 +28,9 @@ try {
 
 <section class="my-section">
     <div class="my-container">
-        <h1 class="my-title">
-            Статистика по категоріям
-        </h1>
+        <h2 class="my-title my-is-4">
+            Статистика курсів за категоряіми
+        </h2>
 
         <form name="form" method="post">
 
@@ -86,6 +86,11 @@ try {
                 </div>
             </div>
 
+            <!--            <label class="checkbox">-->
+            <!--                <input type="checkbox" name="subcategory">-->
+            <!--                Підкатегорії-->
+            <!--            </label>-->
+
             <div class="my-field">
                 <div class="my-control">
                     <input type="submit" name="submit" class="my-button my-is-link">
@@ -106,122 +111,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $from = strtotime($_POST['from']);
     $to = strtotime($_POST['to']);
 
-    try {
-        $coursesInCategory = $DB->get_records('course', ['category' => $_POST['category']]);
-    } catch (dml_exception $e) {
-        Helper::errorMessage($e->getMessage());
+    $courses = Helper::getCoursesInCategory($DB, $_POST['category'], $from, $to);
+
+    echo '<table class="my-table my-is-bordered my-is-fullwidth">';
+
+    echo '<thead>';
+    echo '<tr>';
+    echo '<th style="border: 0;">', '</th>';
+    echo '<th colspan="4" class="my-has-text-centered">Відвідування</th>';
+    echo '<th colspan="2" class="my-has-text-centered">Види діяльності та ресурси</th>';
+    echo '</tr>';
+    echo '<tr>';
+    echo '<th>', 'Назва курсу', '</th>';
+
+    if ($_POST['subcategory']) {
+        echo '<th>', 'Назва категорії', '</th>';
     }
 
-    if ($coursesInCategory) {
-        echo '<table class="my-table my-is-bordered my-is-fullwidth">';
+    echo '<th>', 'Зареестровано студентiв', '</th>';
+    echo '<th>', 'К-cть груп', '</th>';
+    echo '<th>', 'К-cть вiдвiдувань', '</th>';
+    echo '<th>', 'Коеф. вiдвiдуваностi', '</th>';
+    echo '<th>', 'К-cть видiв дiяльностi', '</th>';
+    echo '<th>', 'К-cть ресурсів', '</th>';
+    echo '</tr>';
+    echo '</thead>';
 
-        echo '<thead>', '<tr>';
-        echo '<th>', 'Назва курсу', '</th>';
-        echo '<th>', 'Кiлькiсть вiдвiдувань', "</th>";
-        echo '<th>', 'Зареестровано студентiв', "</th>";
-        echo '<th>', 'Коеф. вiдвiдуваностi', "</th>";
-        echo '<th>', 'Кiлькiсть видiв дiяльностi', "</th>";
-        echo '</tr>', '</thead>';
+    echo '<tfoot>';
+    echo '<tr>';
+    echo '<th>', 'Назва курсу', '</th>';
+    echo '<th>', 'Зареестровано студентiв', '</th>';
+    echo '<th>', 'К-cть груп', '</th>';
+    echo '<th>', 'К-cть вiдвiдувань', '</th>';
+    echo '<th>', 'Коеф. вiдвiдуваностi', '</th>';
+    echo '<th>', 'К-cть видiв дiяльностi', '</th>';
+    echo '<th>', 'К-cть ресурсів', '</th>';
+    echo '</tr>';
+    echo '</tfoot>';
 
-        echo '<tfoot>', '<tr>';
-        echo '<th>', 'Назва курсу', '</th>';
-        echo '<th>', 'Кiлькiсть вiдвiдувань', "</th>";
-        echo '<th>', 'Зареестровано студентiв', "</th>";
-        echo '<th>', 'Коеф. вiдвiдуваностi', "</th>";
-        echo '<th>', 'Кiлькiсть видiв дiяльностi', "</th>";
-        echo '</tr>', '</tfoot>';
+    echo '<tbody>';
 
-        echo '<tbody>';
+    foreach ($courses as $course) {
+        $countOfStudents = Helper::getCountOfStudentsOnCourse($DB, $course->id, $from, $to);
+        $countOfViews = Helper::getCountOfCourseViews($DB, $course->id, $from, $to);
 
-        foreach ($coursesInCategory as $courseInCategory) {
-            /** @noinspection HtmlUnknownTarget */
-            echo
-            '<tr>',
-            '<td>',
-                '<a href="' . '/course/view.php?id=' . $courseInCategory->id . '">',
-            $courseInCategory->fullname,
-            '</a>',
-            '</td>';
+        echo
+        '<tr>',
+        '<td>',
+            '<a href="' . '/course/view.php?id=' . $course->id . '">',
+        $course->fullname,
+        '</a>',
+        '</td>';
 
-            try {
-                $coursesByFullName = $DB->get_records('course', ['fullname' => $courseInCategory->fullname]);
-            } catch (dml_exception $e) {
-                Helper::errorMessage($e->getMessage());
-            }
+        echo '<td>', $countOfStudents, '</td>';
 
-            if ($coursesByFullName) {
-                $countOfViews = 0;
-                $countOfStudents = 0;
-                $countOfCourseModules = 0;
+        echo '<td>', Helper::getCountOfCourseGroups($DB, $course->id, $from, $to), '</td>';
 
-                foreach ($coursesByFullName as $courseByFullName) {
-                    try {
-                        $views = $DB->get_records_sql(
-                            'SELECT * FROM mdl_logstore_standard_log WHERE action = ? AND target = ? AND courseid = ? AND timecreated > ? AND timecreated < ?',
-                            ['viewed', 'course', $courseByFullName->id, $from, $to]
-                        );
-                    } catch (dml_exception $e) {
-                        Helper::errorMessage($e->getMessage());
-                    }
+        echo '<td>', $countOfViews, '</td>';
 
-                    if ($views) {
-                        $countOfViews = count($views);
-                    }
-
-                    echo '<td>', $countOfViews, '</td>';
-
-                    try {
-                        $courseContexts = $DB->get_records('context', ['contextlevel' => 50, 'instanceid' => $courseByFullName->id]);
-                    } catch (dml_exception $e) {
-                        Helper::errorMessage($e->getMessage());
-                    }
-
-                    if ($courseContexts) {
-                        foreach ($courseContexts as $courseContext) {
-                            try {
-                                $courseStudents = $DB->get_record_sql(
-                                    'SELECT * from mdl_role_assignments WHERE roleid = ? AND contextid = ? AND timemodified > ? AND timemodified < ?', [
-                                    5, $courseContext->id, $from, $to
-                                ]);
-                            } catch (dml_exception $e) {
-                                Helper::errorMessage($e->getMessage());
-                            }
-
-                            if ($courseStudents) {
-                                $countOfStudents = count($courseStudents);
-                            }
-                        }
-                    }
-
-                    echo '<td>', $countOfStudents, '</td>';
-
-                    if ($countOfViews == 0 || $countOfStudents == 0) {
-                        echo '<td>0</td>';
-                    } else {
-                        echo '<td>', round($countOfViews / $countOfStudents), '</td>';
-                    }
-
-                    try {
-                        $courseModules = $DB->get_records_sql('SELECT * FROM mdl_course_modules WHERE course = ? AND added > ? AND added < ?', [
-                            $courseByFullName->id, $from, $to
-                        ]);
-                    } catch (dml_exception $e) {
-                        Helper::errorMessage($e->getMessage());
-                    }
-
-                    if ($courseModules) {
-                        $countOfCourseModules = count($courseModules);
-                    }
-
-                    echo '<td>', $countOfCourseModules, '</td>';
-                }
-            }
-
-            echo '</tr>';
+        if ($countOfViews == 0 || $countOfStudents == 0) {
+            echo '<td>0</td>';
+        } else {
+            echo '<td>', round($countOfViews / $countOfStudents), '</td>';
         }
 
-        echo '</tbody>';
+        echo '<td>', '-', '</td>';
+
+        echo '<td>', '-', '</td>';
+
+        echo '</tr>';
     }
+
+    echo '</tbody>';
 
     echo
     '</div>',

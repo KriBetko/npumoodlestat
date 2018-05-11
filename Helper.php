@@ -147,11 +147,11 @@ class Helper
     /**
      * @param moodle_database $db
      * @param int $courseId
-     * @param int $timeFrom
-     * @param int $timeTo
+     * @param int $from
+     * @param int $to
      * @return int
      */
-    public static function getCountOfCourseViews($db, $courseId, $timeFrom, $timeTo)
+    public static function getCountOfCourseViews($db, $courseId, $from, $to)
     {
         try {
             $views = $db->get_records_sql(
@@ -163,8 +163,8 @@ class Helper
                               AND timecreated < ?",
                 [
                     $courseId,
-                    $timeFrom,
-                    $timeTo
+                    $from,
+                    $to
                 ]
             );
         } catch (dml_exception $e) {
@@ -361,6 +361,69 @@ class Helper
         } catch (moodle_exception $e) {
             Helper::errorMessage($e->getMessage());
             return null;
+        }
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseId
+     * @param int $from
+     * @param int $to
+     * @return array|null
+     */
+    private static function getCourseGroups($db, $courseId, $from, $to)
+    {
+        try {
+            return $db->get_records_sql('
+                SELECT * FROM mdl_groups 
+                WHERE courseid = ?
+                AND timecreated > ?
+                AND timecreated < ?', [
+                $courseId,
+                $from,
+                $to
+            ]);
+        } catch (dml_exception $e) {
+            self::errorMessage($e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseId
+     * @param int $from
+     * @param int $to
+     * @return int
+     */
+    public static function getCountOfCourseGroups($db, $courseId, $from, $to)
+    {
+        $groups = self::getCourseGroups($db, $courseId, $from, $to);
+        return $groups ? count($groups) : 0;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $categoryId
+     * @param int $from
+     * @param int $to
+     * @return array
+     */
+    public static function getCoursesInCategory($db, $categoryId, $from, $to)
+    {
+        try {
+            return $db->get_records_sql('
+                SELECT * FROM mdl_course 
+                WHERE category = ?
+                AND timecreated > ?
+                AND timecreated < ?', [
+                $categoryId,
+                $from,
+                $to
+            ]);
+        } catch (dml_exception $e) {
+            self::errorMessage($e->getMessage());
+            return [];
         }
     }
 }
