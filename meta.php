@@ -22,13 +22,15 @@ try {
 
 $categories = Helper::getCategories($DB);
 
-$courses = Helper::getCoursesWithSubCoursesByCategory($DB, reset($categories)->id);
+$courses = Helper::getCoursesWithSubCoursesByCategory($DB, $_POST['category'] ? $_POST['category'] : reset($categories)->id);
+
+$groups = Helper::getCourseGroups($DB, $_POST['course'] ? $_POST['course'] : reset($courses)->id);
 
 ?>
 
 <section class="my-section">
     <div class="my-container">
-        <h1 class="my-title">
+        <h1 class="my-title my-is-4">
             Статистика по курсам
         </h1>
         <form name="form" method="post">
@@ -71,13 +73,16 @@ $courses = Helper::getCoursesWithSubCoursesByCategory($DB, reset($categories)->i
                         <div class="my-control my-is-expanded">
                             <div class="my-select my-is-fullwidth">
                                 <!--suppress HtmlFormInputWithoutLabel -->
-                                <select name="category">
+                                <select name="category" <?php if (!$categories) echo 'disabled' ?>>
                                     <?php
 
-                                    foreach ($categories as $category) {
-                                        print "<option value=\"{$category->id}\">{$category->name}</option>";
+                                    foreach ($categories as $categoryId) {
+                                        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['category'] === $categoryId->id) {
+                                            print "<option value=\"{$categoryId->id}\" selected>{$categoryId->name}</option>";
+                                        } else {
+                                            print "<option value=\"{$categoryId->id}\">{$categoryId->name}</option>";
+                                        }
                                     }
-
                                     ?>
                                 </select>
                             </div>
@@ -95,11 +100,43 @@ $courses = Helper::getCoursesWithSubCoursesByCategory($DB, reset($categories)->i
                         <div class="my-control my-is-expanded">
                             <div class="my-select my-is-fullwidth" id="select-course">
                                 <!--suppress HtmlFormInputWithoutLabel -->
-                                <select name="course">
+                                <select name="course" <?php if (!$courses) echo 'disabled' ?>>
                                     <?php
 
                                     foreach ($courses as $course) {
-                                        print "<option value=\"{$course->id}\">{$course->fullname}</option>";
+                                        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['course'] === $course->id) {
+                                            print "<option value=\"{$course->id}\" selected>{$course->fullname}</option>";
+                                        } else {
+                                            print "<option value=\"{$course->id}\">{$course->fullname}</option>";
+                                        }
+                                    }
+
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="my-field my-is-horizontal">
+                <div class="my-field-label my-is-normal">
+                    <label class="my-label">Група</label>
+                </div>
+                <div class="my-field-body">
+                    <div class="my-field">
+                        <div class="my-control my-is-expanded">
+                            <div class="my-select my-is-fullwidth" id="select-group">
+                                <!--suppress HtmlFormInputWithoutLabel -->
+                                <select name="group" <?php if (!$groups) echo 'disabled' ?>>
+                                    <?php
+
+                                    foreach ($groups as $groupId) {
+                                        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['group'] === $groupId->id) {
+                                            print "<option value=\"{$groupId->id}\" selected>{$groupId->name}</option>";
+                                        } else {
+                                            print "<option value=\"{$groupId->id}\">{$groupId->name}</option>";
+                                        }
                                     }
 
                                     ?>
@@ -124,6 +161,9 @@ $courses = Helper::getCoursesWithSubCoursesByCategory($DB, reset($categories)->i
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $from = strtotime($_POST['from']);
     $to = strtotime($_POST['to']);
+    $categoryId = $_POST['category'];
+    $courseId = $_POST['course'];
+    $groupId = $_POST['group'];
 
     $moduleSubCourseId = Helper::getSubCourseModuleId($DB);
 
@@ -132,28 +172,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         "<section class=\"my-section\">",
         "<div class=\"my-container\">";
 
-        $course = Helper::getCourse($DB, $_POST['course']);
+        $course = Helper::getCourse($DB, $courseId);
 
         if ($course) {
-            echo "<p class=\"my-title my-is-1 my-is-spaced\">Статистика для мета-курсу ",
+            echo "<h1 class=\"my-title my-is-4\">Статистика для мета-курсу ",
             "<a href=\"/course/view.php?id=$course->id\">\"$course->fullname\"</a>",
-            "</p>";
+            "</h1>";
 
-            $courseStudents = Helper::getCountOfStudentsOnCourse($DB, $course->id, $from, $to);
+            $groupStudents = Helper::getCountOfMembersOnGroup($DB, $groupId, $from, $to);
 
-            echo "<p class='my-subtitle my-is-3'>Кількість студентів: {$courseStudents}</p>";
+            echo "<h2 class='my-subtitle'>Кількість студентів: {$groupStudents}</h2>";
 
-            $courseViews = Helper::getCountOfCourseViews($DB, $course->id, $from, $to);
+            $courseViews = Helper::getCountOfCourseViewsByUsers($DB, $groupId, $from, $to);
 
-            echo "<p class='my-subtitle my-is-3'>Кількість переглядів: {$courseViews}</p>";
+            echo "<h2 class='my-subtitle'>Кількість переглядів: {$courseViews}</h2>";
 
             $coursePopularity = 0;
 
-            if ($courseViews != 0 && $courseStudents != 0) {
-                $coursePopularity = round($courseViews / $courseStudents);
+            if ($courseViews != 0 && $groupStudents != 0) {
+                $coursePopularity = round($courseViews / $groupStudents);
             }
 
-            echo "<p class='my-subtitle my-is-3'>Коеф. вiдвiдуваностi: {$coursePopularity}</p>";
+            echo "<h2 class='my-subtitle'>Коеф. вiдвiдуваностi: {$coursePopularity}</h2>";
 
             $courseInfo = Helper::getFastModInfo($course);
 
@@ -165,8 +205,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $modulesBySection[$module->section] = [];
                     }
 
-                    array_push($modulesBySection[$module->section], $module);
-
+                    if ($module->module === $moduleSubCourseId) {
+                        $modulesBySection[$module->section][] = $module;
+                    }
                 }
 
                 foreach ($courseInfo->get_section_info_all() as $section) {
@@ -191,23 +232,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (count($modulesBySection[$section->id]) > 0) {
                         echo "<table class=\"my-table my-is-bordered my-is-fullwidth\">";
 
-                        echo "<thead><tr>";
-                        echo "<th>Тип модулю</th>";
-                        echo "<th>Назва модулю</th>";
+                        echo '<thead>';
+                        echo '<tr>';
+                        echo '<th colspan="2" style="border: 0;">', '</th>';
+                        echo '<th colspan="4" class="my-has-text-centered">Відвідування</th>';
+                        echo '<th colspan="2" class="my-has-text-centered">Види діяльності та ресурси</th>';
+                        echo '</tr>';
+                        echo '<tr>';
+                        echo '<th>', 'Назва мета-курсу', '</th>';
+                        echo '<th>', 'Назва курсу', '</th>';
+                        echo '<th>', 'Зареестровано студентiв', '</th>';
+                        echo '<th>', 'К-cть груп', '</th>';
+                        echo '<th>', 'К-cть вiдвiдувань', '</th>';
+                        echo '<th>', 'Коеф. вiдвiдуваностi', '</th>';
+                        echo '<th>', 'К-cть видiв дiяльностi', '</th>';
+                        echo '<th>', 'К-cть ресурсів', '</th>';
+                        echo '</tr>';
+                        echo '</thead>';
+
+                        echo '<tfoot>';
+                        echo '<tr>';
+                        echo '<th>', 'Назва мета-курсу', '</th>';
+                        echo '<th>', 'Назва курсу', '</th>';
+                        echo '<th>', 'Зареестровано студентiв', '</th>';
+                        echo '<th>', 'К-cть груп', '</th>';
+                        echo '<th>', 'К-cть вiдвiдувань', '</th>';
+                        echo '<th>', 'Коеф. вiдвiдуваностi', '</th>';
+                        echo '<th>', 'К-cть видiв дiяльностi', '</th>';
+                        echo '<th>', 'К-cть ресурсів', '</th>';
+                        echo '</tr>';
+                        echo '</tfoot>';
 
                         echo "<tbody>";
 
                         /** @var cm_info $module */
                         foreach ($modulesBySection[$section->id] as $module) {
+                            $subCourse = Helper::getCourseBySubCourseModule($DB, $module->id, $course->id, $section->section);
+                            $subCourseCourse = Helper::getCourse($DB, $subCourse->refcourse);
+
                             echo "<tr>";
 
-                            echo "<td>", $module->modfullname, "</td>";
-
-                            echo "<td>", "<a href=\"/mod/{$module->modname}/view.php?id={$module->id}\">";
+                            echo "<td>", "<a href=\"/course/view.php?id={$subCourse->refcourse}\">";
 
                             echo $module->name;
 
                             echo "</a>", "</td>";
+
+                            echo "<td>{$subCourseCourse->fullname}</td>";
+
+                            $countOfStudents = Helper::getCountOfStudentsOnCourse($DB, $subCourseCourse->id, $from, $to);
+
+                            echo "<td class=\"my-has-text-centered\">{$countOfStudents}</td>";
+
+                            $countOfGroups = Helper::getCountOfCourseGroups($DB, $subCourseCourse->id);
+
+                            echo "<td class=\"my-has-text-centered\">{$countOfGroups}</td>";
+
+                            $countOfViews = Helper::getCountOfCourseViews($DB, $subCourseCourse->id, $from, $to);
+
+                            echo "<td class=\"my-has-text-centered\">{$countOfViews}</td>";
+
+                            if ($countOfViews == 0 || $countOfStudents == 0) {
+                                echo '<td class="my-has-text-centered">0</td>';
+                            } else {
+                                echo '<td class="my-has-text-centered">', round($countOfViews / $countOfStudents), '</td>';
+                            }
+
+                            echo '<td class="my-has-text-centered">', '-', '</td>';
+
+                            echo '<td class="my-has-text-centered">', '-', '</td>';
 
                             echo "</tr>";
                         }
@@ -216,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         echo "</table>";
                     } else {
-                        echo "<p>В секції не знайдено жодного модуля</p>";
+                        echo "<p>В секції не знайдено жодного підкурсу</p>";
                     }
 
                     echo "</div>";

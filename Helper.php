@@ -193,6 +193,45 @@ class Helper
     }
 
     /**
+     * @param int $courseModuleId
+     * @param int $courseId
+     * @param int $sectionNum
+     * @return stdClass|null
+     */
+    public static function getSubCourseModuleFromId($courseModuleId, $courseId, $sectionNum)
+    {
+        try {
+            return get_coursemodule_from_id('subcourse', $courseModuleId, $courseId, $sectionNum);
+        } catch (coding_exception $e) {
+            Helper::errorMessage($e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseModuleId
+     * @param int $courseId
+     * @param int $sectionNum
+     * @return stdClass|null
+     */
+    public static function getCourseBySubCourseModule($db, $courseModuleId, $courseId, $sectionNum)
+    {
+        $module = self::getSubCourseModuleFromId($courseModuleId, $courseId, $sectionNum);
+
+        if ($module) {
+            try {
+                return $db->get_record('subcourse', ['id' => $module->instance]);
+            } catch (dml_exception $e) {
+                Helper::errorMessage($e->getMessage());
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * @param moodle_database $db
      * @param int $courseId
      * @return object|null
@@ -367,38 +406,30 @@ class Helper
     /**
      * @param moodle_database $db
      * @param int $courseId
-     * @param int $from
-     * @param int $to
      * @return array|null
      */
-    private static function getCourseGroups($db, $courseId, $from, $to)
+    public static function getCourseGroups($db, $courseId)
     {
         try {
             return $db->get_records_sql('
                 SELECT * FROM mdl_groups 
-                WHERE courseid = ?
-                AND timecreated > ?
-                AND timecreated < ?', [
-                $courseId,
-                $from,
-                $to
+                WHERE courseid = ?', [
+                $courseId
             ]);
         } catch (dml_exception $e) {
             self::errorMessage($e->getMessage());
-            return null;
+            return [];
         }
     }
 
     /**
      * @param moodle_database $db
      * @param int $courseId
-     * @param int $from
-     * @param int $to
      * @return int
      */
-    public static function getCountOfCourseGroups($db, $courseId, $from, $to)
+    public static function getCountOfCourseGroups($db, $courseId)
     {
-        $groups = self::getCourseGroups($db, $courseId, $from, $to);
+        $groups = self::getCourseGroups($db, $courseId);
         return $groups ? count($groups) : 0;
     }
 
@@ -424,6 +455,83 @@ class Helper
         } catch (dml_exception $e) {
             self::errorMessage($e->getMessage());
             return [];
+        }
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $groupId
+     * @param int $from
+     * @param int $to
+     * @return array
+     */
+    public static function getGroupMembers($db, $groupId, $from, $to)
+    {
+        try {
+            return $db->get_records_sql('
+                SELECT * FROM mdl_groups_members 
+                WHERE groupid = ?
+                AND timeadded > ?
+                AND timeadded < ?', [
+                $groupId,
+                $from,
+                $to
+            ]);
+        } catch (dml_exception $e) {
+            self::errorMessage($e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $groupId
+     * @param int $from
+     * @param int $to
+     * @return int
+     */
+    public static function getCountOfMembersOnGroup($db, $groupId, $from, $to)
+    {
+        $members = self::getGroupMembers($db, $groupId, $from, $to);
+        return $members ? count($members) : 0;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $groupId
+     * @param int $from
+     * @param int $to
+     * @return int
+     */
+    public static function getCountOfCourseViewsByUsers($db, $groupId, $from, $to)
+    {
+        $users = self::getGroupMembers($db, $groupId, $from, $to);
+
+        if ($users) {
+            $ids = [];
+
+            foreach ($users as $user) {
+                $ids[] = $user->id;
+            }
+
+            try {
+                return count($db->get_records_sql("
+                SELECT * FROM mdl_logstore_standard_log 
+                WHERE action = 'viewed'
+                AND target = 'course'
+                AND userid IN (" . implode(',', $ids) . ")
+                AND timecreated > ?
+                AND timecreated < ?", [
+                    $ids,
+                    $from,
+                    $to
+                ]));
+            } catch (dml_exception $e) {
+                self::errorMessage($e->getMessage());
+                return 0;
+            }
+        } else {
+            return 0;
         }
     }
 }
