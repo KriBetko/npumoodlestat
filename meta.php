@@ -239,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         echo '<th colspan="2" class="my-has-text-centered">Види діяльності та ресурси</th>';
                         echo '</tr>';
                         echo '<tr>';
-                        echo '<th>', 'Предмет', '</th>';
+                        echo '<th>', 'Дисципліна', '</th>';
                         echo '<th>', 'Назва курсу', '</th>';
                         echo '<th>', 'Зареєстровано студентів', '</th>';
                         echo '<th>', 'К-cть груп', '</th>';
@@ -252,7 +252,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         echo '<tfoot>';
                         echo '<tr>';
-                        echo '<th>', 'Предмет', '</th>';
+                        echo '<th>', 'Дисципліна', '</th>';
                         echo '<th>', 'Назва курсу', '</th>';
                         echo '<th>', 'Зареєстровано студентів', '</th>';
                         echo '<th>', 'К-cть груп', '</th>';
