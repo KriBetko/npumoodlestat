@@ -128,7 +128,7 @@ class Helper
     /**
      * @param moodle_database $db
      * @param int $courseId
-     * @return array|null
+     * @return array
      */
     public static function getCourseModules($db, $courseId)
     {
@@ -138,10 +138,29 @@ class Helper
             ]);
         } catch (dml_exception $e) {
             self::errorMessage($e->getMessage());
-            return null;
+            return [];
         }
 
         return $modules;
+    }
+
+    /**
+     * @param moodle_database $db
+     * @param int $moduleId
+     * @return stdClass|null
+     */
+    public static function getCourseModule($db, $moduleId)
+    {
+        try {
+            $module = $db->get_record('modules', [
+                'id' => $moduleId
+            ]);
+        } catch (dml_exception $e) {
+            self::errorMessage($e->getMessage());
+            return null;
+        }
+
+        return $module;
     }
 
     /**
@@ -234,7 +253,7 @@ class Helper
     /**
      * @param moodle_database $db
      * @param int $courseId
-     * @return object|null
+     * @return stdClass|null
      */
     public static function getCourse($db, $courseId)
     {
@@ -534,4 +553,49 @@ class Helper
             return 0;
         }
     }
+
+    /**
+     * @param moodle_database $db
+     * @param int $courseId
+     * @return array
+     */
+    public static function getCountOfResourcesAndActivitiesInCourse($db, $courseId)
+    {
+        $course = self::getCourse($db, $courseId);
+        $courseModules = self::getCourseModules($db, $courseId);
+
+        $registeredModules = get_module_types_names();
+
+        $modNames = [];
+
+        foreach ($registeredModules as $key => $registeredModule) {
+            foreach ($courseModules as $courseModule) {
+                $modInfo = self::getCourseModule($db, $courseModule->module);
+
+                if ($modInfo) {
+                    if ($key === $modInfo->name) {
+                        $modNames[$modInfo->name] = $registeredModule;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $modules = get_module_metadata($course, $modNames);
+
+        $activities = [MOD_CLASS_ACTIVITY => [], MOD_CLASS_RESOURCE => []];
+
+        foreach ($modules as $module) {
+            $activityClass = MOD_CLASS_ACTIVITY;
+            if ($module->archetype == MOD_ARCHETYPE_RESOURCE) {
+                $activityClass = MOD_CLASS_RESOURCE;
+            } else if ($module->archetype === MOD_ARCHETYPE_SYSTEM) {
+                continue;
+            }
+            $activities[$activityClass][] = $module->title;
+        }
+
+        return $activities;
+    }
+
 }

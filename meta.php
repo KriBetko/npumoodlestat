@@ -298,9 +298,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 echo '<td class="my-has-text-centered">', round($countOfViews / $countOfStudents), '</td>';
                             }
 
-                            echo '<td class="my-has-text-centered">', '-', '</td>';
+                            $countOfResources = Helper::getCountOfResourcesAndActivitiesInCourse($DB, $subCourseCourse->id);
 
-                            echo '<td class="my-has-text-centered">', '-', '</td>';
+                            echo '<td class="my-has-text-centered">', count($countOfResources[0]), '</td>';
+
+                            echo '<td class="my-has-text-centered">', count($countOfResources[1]), '</td>';
 
                             echo "</tr>";
                         }

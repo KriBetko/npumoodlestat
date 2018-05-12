@@ -163,21 +163,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         '</a>',
         '</td>';
 
-        echo '<td>', $countOfStudents, '</td>';
+        echo '<td class="my-has-text-centered">', $countOfStudents, '</td>';
 
-        echo '<td>', Helper::getCountOfCourseGroups($DB, $course->id, $from, $to), '</td>';
+        echo '<td class="my-has-text-centered">', Helper::getCountOfCourseGroups($DB, $course->id, $from, $to), '</td>';
 
-        echo '<td>', $countOfViews, '</td>';
+        echo '<td class="my-has-text-centered">', $countOfViews, '</td>';
 
         if ($countOfViews == 0 || $countOfStudents == 0) {
-            echo '<td>0</td>';
+            echo '<td class="my-has-text-centered">0</td>';
         } else {
-            echo '<td>', round($countOfViews / $countOfStudents), '</td>';
+            echo '<td class="my-has-text-centered">', round($countOfViews / $countOfStudents), '</td>';
         }
 
-        echo '<td>', '-', '</td>';
+        $countOfResources = Helper::getCountOfResourcesAndActivitiesInCourse($DB, $course->id);
 
-        echo '<td>', '-', '</td>';
+        echo '<td class="my-has-text-centered">', count($countOfResources[0]), '</td>';
+
+        echo '<td class="my-has-text-centered">', count($countOfResources[1]), '</td>';
 
         echo '</tr>';
     }
