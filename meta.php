@@ -239,9 +239,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         echo '<th colspan="2" class="my-has-text-centered">Види діяльності та ресурси</th>';
                         echo '</tr>';
                         echo '<tr>';
-                        echo '<th>', 'Назва мета-курсу', '</th>';
+                        echo '<th>', 'Предмет', '</th>';
                         echo '<th>', 'Назва курсу', '</th>';
-                        echo '<th>', 'Зареестровано студентiв', '</th>';
+                        echo '<th>', 'Зареєстровано студентів', '</th>';
                         echo '<th>', 'К-cть груп', '</th>';
                         echo '<th>', 'К-cть вiдвiдувань', '</th>';
                         echo '<th>', 'Коеф. вiдвiдуваностi', '</th>';
@@ -252,9 +252,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         echo '<tfoot>';
                         echo '<tr>';
-                        echo '<th>', 'Назва мета-курсу', '</th>';
+                        echo '<th>', 'Предмет', '</th>';
                         echo '<th>', 'Назва курсу', '</th>';
-                        echo '<th>', 'Зареестровано студентiв', '</th>';
+                        echo '<th>', 'Зареєстровано студентів', '</th>';
                         echo '<th>', 'К-cть груп', '</th>';
                         echo '<th>', 'К-cть вiдвiдувань', '</th>';
                         echo '<th>', 'Коеф. вiдвiдуваностi', '</th>';
@@ -272,13 +272,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             echo "<tr>";
 
-                            echo "<td>", "<a href=\"/course/view.php?id={$subCourse->refcourse}\">";
+                            echo "<td>", $module->name, "</td>";
 
-                            echo $module->name;
+                            echo "<td>", "<a href=\"/course/view.php?id={$subCourseCourse->id}\">";
+
+                            echo $subCourseCourse->fullname;
 
                             echo "</a>", "</td>";
-
-                            echo "<td>{$subCourseCourse->fullname}</td>";
 
                             $countOfStudents = Helper::getCountOfStudentsOnCourse($DB, $subCourseCourse->id, $from, $to);
 
@@ -309,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         echo "</table>";
                     } else {
-                        echo "<p>В секції не знайдено жодного підкурсу</p>";
+                        echo "<p style=\"margin-bottom: 0\">В секції не знайдено жодного підкурсу</p>";
                     }
 
                     echo "</div>";
