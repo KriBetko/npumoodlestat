@@ -73,10 +73,15 @@ try {
                         <div class="my-control my-is-expanded">
                             <div class="my-select my-is-fullwidth">
                                 <!--suppress HtmlFormInputWithoutLabel -->
-                                <select name="category">
+                                <select name="category" <?php if (!$categories) echo 'disabled' ?>>
                                     <?php
-                                    foreach ($categories as $category) {
-                                        echo "<option value='" . $category->id . "'>" . $category->name . "</option>";
+
+                                    foreach ($categories as $categoryId) {
+                                        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['category'] === $categoryId->id) {
+                                            print "<option value=\"{$categoryId->id}\" selected>{$categoryId->name}</option>";
+                                        } else {
+                                            print "<option value=\"{$categoryId->id}\">{$categoryId->name}</option>";
+                                        }
                                     }
                                     ?>
                                 </select>
@@ -198,6 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         crossorigin="anonymous"></script>
 
 <script src="assets/js/inputDate.js"></script>
+<script src="assets/js/meta.js"></script>
 
 </body>
 </html>
