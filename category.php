@@ -203,7 +203,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         crossorigin="anonymous"></script>
 
 <script src="assets/js/inputDate.js"></script>
-<script src="assets/js/meta.js"></script>
 
 </body>
 </html>
