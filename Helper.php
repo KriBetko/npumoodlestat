@@ -581,21 +581,27 @@ class Helper
             }
         }
 
-        $modules = get_module_metadata($course, $modNames);
+        $modulesMetaData = get_module_metadata($course, $modNames);
 
-        $activities = [MOD_CLASS_ACTIVITY => [], MOD_CLASS_RESOURCE => []];
+        $activities = 0;
+        $resources = 0;
 
-        foreach ($modules as $module) {
-            $activityClass = MOD_CLASS_ACTIVITY;
-            if ($module->archetype == MOD_ARCHETYPE_RESOURCE) {
-                $activityClass = MOD_CLASS_RESOURCE;
-            } else if ($module->archetype === MOD_ARCHETYPE_SYSTEM) {
-                continue;
+        foreach ($courseModules as $courseModule) {
+            $modInfo = self::getCourseModule($db, $courseModule->module);
+            foreach ($modulesMetaData as $moduleMetaData) {
+                if ($modInfo->name === $moduleMetaData->name) {
+                    if ($moduleMetaData->archetype === MOD_CLASS_ACTIVITY) {
+                        $activities++;
+                    } else if ($moduleMetaData->archetype == MOD_ARCHETYPE_RESOURCE) {
+                        $resources++;
+                    }
+                }
             }
-            $activities[$activityClass][] = $module->title;
         }
 
-        return $activities;
+        return [
+            'activities' => $activities,
+            'resources' => $resources
+        ];
     }
-
 }

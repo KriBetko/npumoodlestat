@@ -300,9 +300,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             $countOfResources = Helper::getCountOfResourcesAndActivitiesInCourse($DB, $subCourseCourse->id);
 
-                            echo '<td class="my-has-text-centered">', count($countOfResources[0]), '</td>';
+                            echo '<td class="my-has-text-centered">', $countOfResources['activities'], '</td>';
 
-                            echo '<td class="my-has-text-centered">', count($countOfResources[1]), '</td>';
+                            echo '<td class="my-has-text-centered">', $countOfResources['resources'], '</td>';
 
                             echo "</tr>";
                         }
