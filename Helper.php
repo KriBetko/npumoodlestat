@@ -541,7 +541,6 @@ class Helper
                 AND userid IN (" . implode(',', $ids) . ")
                 AND timecreated > ?
                 AND timecreated < ?", [
-                    $ids,
                     $from,
                     $to
                 ]));
