@@ -1,7 +1,7 @@
 <?php
 
 /** @noinspection PhpIncludeInspection */
-require_once('../../config.php');
+require_once '../../config.php';
 
 require_once 'Helper.php';
 

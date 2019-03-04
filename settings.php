@@ -9,7 +9,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once('Helper.php');
+require_once 'Helper.php';
 
 /** @var navigation_node $ADMIN */
 $ADMIN->add('reports', new admin_externalpage(

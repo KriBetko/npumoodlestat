@@ -18,7 +18,7 @@ files_to_move=(
 
 root=$PWD
 
-if [ ! -d ${build_dir} ];
+if [[ ! -d ${build_dir} ]];
 then
     mkdir ${build_dir}
 else

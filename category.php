@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="ua">
 <head>
     <meta charset="utf-8">
     <title>NPU Stat</title>
@@ -10,17 +10,13 @@
 
 <?PHP
 /** @noinspection PhpIncludeInspection */
-require(__DIR__ . '/../../config.php');
-require('Helper.php');
+require __DIR__ . '/../../config.php';
+require 'Helper.php';
+
+echo $OUTPUT->header();
 
 try {
-    echo $OUTPUT->header();
-} catch (coding_exception $e) {
-    Helper::errorMessage($e->getMessage());
-}
-
-try {
-    $categories = $DB->get_records('course_categories', null);
+    $categories = $DB->get_records('course_categories');
 } catch (dml_exception $e) {
     Helper::errorMessage($e->getMessage());
 }
@@ -73,7 +69,9 @@ try {
                         <div class="my-control my-is-expanded">
                             <div class="my-select my-is-fullwidth">
                                 <!--suppress HtmlFormInputWithoutLabel -->
-                                <select name="category" <?php if (!$categories) echo 'disabled' ?>>
+                                <select name="category" <?php if (!$categories) {
+                                    echo 'disabled';
+                                } ?>>
                                     <?php
 
                                     foreach ($categories as $categoryId) {
@@ -174,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         echo '<td class="my-has-text-centered">', $countOfViews, '</td>';
 
-        if ($countOfViews == 0 || $countOfStudents == 0) {
+        if ($countOfViews === 0 || $countOfStudents === 0) {
             echo '<td class="my-has-text-centered">0</td>';
         } else {
             echo '<td class="my-has-text-centered">', round($countOfViews / $countOfStudents), '</td>';

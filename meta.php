@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="ua">
 <head>
     <meta charset="utf-8">
     <title>NPU Stat</title>
@@ -10,21 +10,17 @@
 
 <?PHP
 /** @noinspection PhpIncludeInspection */
-require_once('../../config.php');
+require_once '../../config.php';
 
 require_once 'Helper.php';
 
-try {
-    echo $OUTPUT->header();
-} catch (coding_exception $e) {
-    echo "<pre style=\"color: red;\">{\$e->getMessage()}</pre>";
-}
+echo $OUTPUT->header();
 
 $categories = Helper::getCategories($DB);
 
-$courses = Helper::getCoursesWithSubCoursesByCategory($DB, $_POST['category'] ? $_POST['category'] : reset($categories)->id);
+$courses = Helper::getCoursesWithSubCoursesByCategory($DB, $_POST['category'] ?: reset($categories)->id);
 
-$groups = Helper::getCourseGroups($DB, $_POST['course'] ? $_POST['course'] : reset($courses)->id);
+$groups = Helper::getCourseGroups($DB, $_POST['course'] ?: reset($courses)->id);
 
 ?>
 
@@ -73,7 +69,9 @@ $groups = Helper::getCourseGroups($DB, $_POST['course'] ? $_POST['course'] : res
                         <div class="my-control my-is-expanded">
                             <div class="my-select my-is-fullwidth">
                                 <!--suppress HtmlFormInputWithoutLabel -->
-                                <select name="category" <?php if (!$categories) echo 'disabled' ?>>
+                                <select name="category" <?php if (!$categories) {
+                                    echo 'disabled';
+                                } ?>>
                                     <?php
 
                                     foreach ($categories as $categoryId) {
@@ -100,7 +98,9 @@ $groups = Helper::getCourseGroups($DB, $_POST['course'] ? $_POST['course'] : res
                         <div class="my-control my-is-expanded">
                             <div class="my-select my-is-fullwidth" id="select-course">
                                 <!--suppress HtmlFormInputWithoutLabel -->
-                                <select name="course" <?php if (!$courses) echo 'disabled' ?>>
+                                <select name="course" <?php if (!$courses) {
+                                    echo 'disabled';
+                                } ?>>
                                     <?php
 
                                     foreach ($courses as $course) {
@@ -128,7 +128,9 @@ $groups = Helper::getCourseGroups($DB, $_POST['course'] ? $_POST['course'] : res
                         <div class="my-control my-is-expanded">
                             <div class="my-select my-is-fullwidth" id="select-group">
                                 <!--suppress HtmlFormInputWithoutLabel -->
-                                <select name="group" <?php if (!$groups) echo 'disabled' ?>>
+                                <select name="group" <?php if (!$groups) {
+                                    echo 'disabled';
+                                } ?>>
                                     <?php
 
                                     foreach ($groups as $groupId) {
@@ -169,15 +171,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($moduleSubCourseId) {
         echo
-        "<section class=\"my-section\">",
-        "<div class=\"my-container\">";
+        '<section class="my-section">',
+        '<div class="my-container">';
 
         $course = Helper::getCourse($DB, $courseId);
 
         if ($course) {
-            echo "<h1 class=\"my-title my-is-4\">Статистика для мета-курсу ",
+            echo '<h1 class="my-title my-is-4">Статистика для мета-курсу ',
             "<a href=\"/course/view.php?id=$course->id\">\"$course->fullname\"</a>",
-            "</h1>";
+            '</h1>';
 
             $groupStudents = Helper::getCountOfMembersOnGroup($DB, $groupId, $from, $to);
 
@@ -189,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $coursePopularity = 0;
 
-            if ($courseViews != 0 && $groupStudents != 0) {
+            if ($courseViews !== 0 && $groupStudents !== 0) {
                 $coursePopularity = round($courseViews / $groupStudents);
             }
 
@@ -211,26 +213,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 foreach ($courseInfo->get_section_info_all() as $section) {
-                    echo "<article class=\"my-message my-is-primary\">";
+                    echo '<article class="my-message my-is-primary">';
 
                     if ($section->section > 0) {
-                        echo "<div class=\"my-message-header\">";
+                        echo '<div class="my-message-header">';
 
-                        $url = "/course/view.php?id=" . $course->id . "#section-" . $section->id;
+                        $url = '/course/view.php?id=' . $course->id . '#section-' . $section->id;
 
                         echo "<a href='{$url}'>";
 
-                        echo $section->name ? $section->name : "Тема" . $section->section;
+                        echo $section->name ?: 'Тема' . $section->section;
 
-                        echo "</a>";
+                        echo '</a>';
 
-                        echo "</div>";
+                        echo '</div>';
                     }
 
-                    echo "<div class=\"my-message-body\">";
+                    echo '<div class="my-message-body">';
 
                     if (count($modulesBySection[$section->id]) > 0) {
-                        echo "<table class=\"my-table my-is-bordered my-is-fullwidth\">";
+                        echo '<table class="my-table my-is-bordered my-is-fullwidth">';
 
                         echo '<thead>';
                         echo '<tr>';
@@ -263,22 +265,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         echo '</tr>';
                         echo '</tfoot>';
 
-                        echo "<tbody>";
+                        echo '<tbody>';
 
                         /** @var cm_info $module */
                         foreach ($modulesBySection[$section->id] as $module) {
                             $subCourse = Helper::getCourseBySubCourseModule($DB, $module->id, $course->id, $section->section);
                             $subCourseCourse = Helper::getCourse($DB, $subCourse->refcourse);
 
-                            echo "<tr>";
+                            echo '<tr>';
 
-                            echo "<td>", $module->name, "</td>";
+                            echo '<td>', $module->name, '</td>';
 
-                            echo "<td>", "<a href=\"/course/view.php?id={$subCourseCourse->id}\">";
+                            echo '<td>', "<a href=\"/course/view.php?id={$subCourseCourse->id}\">";
 
                             echo $subCourseCourse->fullname;
 
-                            echo "</a>", "</td>";
+                            echo '</a>', '</td>';
 
                             $countOfStudents = Helper::getCountOfStudentsOnCourse($DB, $subCourseCourse->id, $from, $to);
 
@@ -292,7 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             echo "<td class=\"my-has-text-centered\">{$countOfViews}</td>";
 
-                            if ($countOfViews == 0 || $countOfStudents == 0) {
+                            if ($countOfViews === 0 || $countOfStudents === 0) {
                                 echo '<td class="my-has-text-centered">0</td>';
                             } else {
                                 echo '<td class="my-has-text-centered">', round($countOfViews / $countOfStudents), '</td>';
@@ -304,25 +306,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             echo '<td class="my-has-text-centered">', $countOfResources['resources'], '</td>';
 
-                            echo "</tr>";
+                            echo '</tr>';
                         }
 
-                        echo "</tbody>";
+                        echo '</tbody>';
 
-                        echo "</table>";
+                        echo '</table>';
                     } else {
-                        echo "<p style=\"margin-bottom: 0\">В секції не знайдено жодного підкурсу</p>";
+                        echo '<p style="margin-bottom: 0">В секції не знайдено жодного підкурсу</p>';
                     }
 
-                    echo "</div>";
+                    echo '</div>';
 
-                    echo "</article>";
+                    echo '</article>';
                 }
             }
         }
 
-        echo "</div>";
-        echo "</section>";
+        echo '</div>';
+        echo '</section>';
     } else {
         Helper::errorMessage('Модуль "subcourse" не знайдено у вашый системы Moodle');
     }

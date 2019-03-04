@@ -6,12 +6,12 @@ class Helper
 
     public static function dump($variable)
     {
-        echo "<pre>", var_export($variable), "</pre>";
+        echo '<pre>', var_export($variable), '</pre>';
     }
 
     public static function dumpWithName($varName, $variable)
     {
-        echo "<span>$varName: </span>", "<pre>", var_export($variable), "</pre>";
+        echo "<span>$varName: </span>", '<pre>', var_export($variable), '</pre>';
     }
 
     /**
@@ -130,7 +130,7 @@ class Helper
      * @param int $courseId
      * @return array
      */
-    public static function getCourseModules($db, $courseId)
+    public static function getCourseModules($db, $courseId): array
     {
         try {
             $modules = $db->get_records('course_modules', [
@@ -170,7 +170,7 @@ class Helper
      * @param int $to
      * @return int
      */
-    public static function getCountOfCourseViews($db, $courseId, $from, $to)
+    public static function getCountOfCourseViews($db, $courseId, $from, $to): int
     {
         try {
             $views = $db->get_records_sql(
@@ -204,7 +204,7 @@ class Helper
         try {
             $subCourses = $db->get_records('subcourse', ['course' => $courseId]);
         } catch (dml_exception $e) {
-            Helper::errorMessage($e->getMessage());
+            self::errorMessage($e->getMessage());
             return null;
         }
 
@@ -222,7 +222,7 @@ class Helper
         try {
             return get_coursemodule_from_id('subcourse', $courseModuleId, $courseId, $sectionNum);
         } catch (coding_exception $e) {
-            Helper::errorMessage($e->getMessage());
+            self::errorMessage($e->getMessage());
             return null;
         }
     }
@@ -242,7 +242,7 @@ class Helper
             try {
                 return $db->get_record('subcourse', ['id' => $module->instance]);
             } catch (dml_exception $e) {
-                Helper::errorMessage($e->getMessage());
+                self::errorMessage($e->getMessage());
                 return null;
             }
         } else {
@@ -260,7 +260,7 @@ class Helper
         try {
             $course = $db->get_record('course', ['id' => $courseId]);
         } catch (dml_exception $e) {
-            Helper::errorMessage($e->getMessage());
+            self::errorMessage($e->getMessage());
             return null;
         }
 
@@ -276,7 +276,7 @@ class Helper
         try {
             $course = $db->get_records('course_categories', []);
         } catch (dml_exception $e) {
-            Helper::errorMessage($e->getMessage());
+            self::errorMessage($e->getMessage());
             return null;
         }
 
@@ -293,7 +293,7 @@ class Helper
         try {
             $course = $db->get_records('course', ['category' => $categoryId]);
         } catch (dml_exception $e) {
-            Helper::errorMessage($e->getMessage());
+            self::errorMessage($e->getMessage());
             return null;
         }
 
@@ -308,11 +308,11 @@ class Helper
     public static function getCourseSections($db, $courseId)
     {
         try {
-            $sections = $db->get_records_sql("SELECT * FROM mdl_course_sections WHERE course = ? ORDER BY section ASC", [
+            $sections = $db->get_records_sql('SELECT * FROM mdl_course_sections WHERE course = ? ORDER BY section ASC', [
                 $courseId
             ]);
         } catch (dml_exception $e) {
-            Helper::errorMessage($e->getMessage());
+            self::errorMessage($e->getMessage());
             return null;
         }
 
@@ -330,7 +330,7 @@ class Helper
         try {
             $course = $db->get_records('course_modules', ['course' => $courseId, 'section' => $sectionId]);
         } catch (dml_exception $e) {
-            Helper::errorMessage($e->getMessage());
+            self::errorMessage($e->getMessage());
             return null;
         }
 
@@ -344,13 +344,13 @@ class Helper
      * @param int $to
      * @return int
      */
-    public static function getCountOfStudentsOnCourse($db, $courseId, $from, $to)
+    public static function getCountOfStudentsOnCourse($db, $courseId, $from, $to): int
     {
-        $subCourseContext = Helper::getContext($db, $courseId);
+        $subCourseContext = self::getContext($db, $courseId);
 
         if ($subCourseContext) {
-            $studentRoleId = Helper::getStudentRoleId($db);
-            $subCourseStudents = Helper::getRoleAssignments($db, $studentRoleId, $subCourseContext->id, $from, $to);
+            $studentRoleId = self::getStudentRoleId($db);
+            $subCourseStudents = self::getRoleAssignments($db, $studentRoleId, $subCourseContext->id, $from, $to);
 
             if ($subCourseStudents) {
                 return count($subCourseStudents);
@@ -373,7 +373,7 @@ class Helper
         }
     }
 
-    public static function getCoursesWithSubCoursesByCategory($db, $categoryId)
+    public static function getCoursesWithSubCoursesByCategory($db, $categoryId): array
     {
         $result = [];
 
@@ -382,12 +382,14 @@ class Helper
         $subCourseModuleId = self::getSubCourseModuleId($db);
 
         foreach ($courses as $course) {
-            $modInfo = Helper::getFastModInfo($course);
+            $modInfo = self::getFastModInfo($course);
 
-            foreach ($modInfo->get_cms() as $module) {
-                if ($module->module === $subCourseModuleId) {
-                    array_push($result, $course);
-                    break;
+            if ($modInfo !== null) {
+                foreach ($modInfo->get_cms() as $module) {
+                    if ($module->module === $subCourseModuleId) {
+                        $result[] = $course;
+                        break;
+                    }
                 }
             }
         }
@@ -417,7 +419,7 @@ class Helper
         try {
             return new moodle_url($url);
         } catch (moodle_exception $e) {
-            Helper::errorMessage($e->getMessage());
+            self::errorMessage($e->getMessage());
             return null;
         }
     }
@@ -446,7 +448,7 @@ class Helper
      * @param int $courseId
      * @return int
      */
-    public static function getCountOfCourseGroups($db, $courseId)
+    public static function getCountOfCourseGroups($db, $courseId): int
     {
         $groups = self::getCourseGroups($db, $courseId);
         return $groups ? count($groups) : 0;
@@ -509,7 +511,7 @@ class Helper
      * @param int $to
      * @return int
      */
-    public static function getCountOfMembersOnGroup($db, $groupId, $from, $to)
+    public static function getCountOfMembersOnGroup($db, $groupId, $from, $to): int
     {
         $members = self::getGroupMembers($db, $groupId, $from, $to);
         return $members ? count($members) : 0;
@@ -538,9 +540,9 @@ class Helper
                 SELECT * FROM mdl_logstore_standard_log 
                 WHERE action = 'viewed'
                 AND target = 'course'
-                AND userid IN (" . implode(',', $ids) . ")
+                AND userid IN (" . implode(',', $ids) . ')
                 AND timecreated > ?
-                AND timecreated < ?", [
+                AND timecreated < ?', [
                     $from,
                     $to
                 ]));
@@ -558,7 +560,7 @@ class Helper
      * @param int $courseId
      * @return array
      */
-    public static function getCountOfResourcesAndActivitiesInCourse($db, $courseId)
+    public static function getCountOfResourcesAndActivitiesInCourse($db, $courseId): array
     {
         $course = self::getCourse($db, $courseId);
         $courseModules = self::getCourseModules($db, $courseId);
@@ -571,11 +573,9 @@ class Helper
             foreach ($courseModules as $courseModule) {
                 $modInfo = self::getCourseModule($db, $courseModule->module);
 
-                if ($modInfo) {
-                    if ($key === $modInfo->name) {
-                        $modNames[$modInfo->name] = $registeredModule;
-                        break;
-                    }
+                if ($modInfo && $key === $modInfo->name) {
+                    $modNames[$modInfo->name] = $registeredModule;
+                    break;
                 }
             }
         }
@@ -591,7 +591,7 @@ class Helper
                 if ($modInfo->name === $moduleMetaData->name) {
                     if ($moduleMetaData->archetype === MOD_CLASS_ACTIVITY) {
                         $activities++;
-                    } else if ($moduleMetaData->archetype == MOD_ARCHETYPE_RESOURCE) {
+                    } else if ($moduleMetaData->archetype === MOD_ARCHETYPE_RESOURCE) {
                         $resources++;
                     }
                 }
