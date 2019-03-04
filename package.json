@@ -1,11 +1,12 @@
 {
   "name": "npumoodlestat",
   "devDependencies": {
-    "bulma": "^0.7.1",
-    "gulp": "^3.9.1",
+    "bulma": "^0.7.4",
+    "gulp": "^4.0.0",
     "gulp-css-prefix": "^0.1.0",
     "gulp-cssmin": "^0.2.0",
-    "gulp-sass": "^4.0.1",
-    "node-sass": "^4.9.0"
-  }
+    "gulp-sass": "^4.0.2",
+    "node-sass": "^4.11.0"
+  },
+  "dependencies": {}
 }
